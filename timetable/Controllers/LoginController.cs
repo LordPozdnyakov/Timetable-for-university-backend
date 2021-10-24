@@ -26,6 +26,7 @@ namespace timetable.Controllers
         [Route("")]
         public void Options()
         {
+            Console.Write("Options\n");
             Response.StatusCode = 200;
             Response.Headers.Append("Allow", "GET, POST, OPTINS");
             Response.Headers.Append("Content-Type", "text/html; charset=UTF-8");
@@ -37,6 +38,7 @@ namespace timetable.Controllers
         [Route("")]
         public async Task<ActionResult<List<Login>>> GetAction([FromServices] DataContext context)
         {
+            Console.Write("Get\n");
             var logins = await context.Logins.ToListAsync();
             return logins;
         }
@@ -45,6 +47,7 @@ namespace timetable.Controllers
         [Route("")]
         public async Task<ActionResult<Login>> Post([FromServices] DataContext context, [FromBody] Login model)
         {
+            Console.Write("Post\n");
             if(!ModelState.IsValid) { return BadRequest(ModelState); }
 
             context.Logins.Add(model);
