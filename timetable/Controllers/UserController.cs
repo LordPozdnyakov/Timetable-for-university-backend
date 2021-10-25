@@ -10,7 +10,7 @@ using timetable.Data;
 namespace timetable.Controllers
 {
     [ApiController]
-    [Route("v1/users")]
+    // [Route("users")]
 
     public class UserController : Controller
     {
@@ -22,22 +22,37 @@ namespace timetable.Controllers
         }
 
         [HttpGet]
-        [Route("")]
-        public async Task<ActionResult<List<User>>> GetAction([FromServices] DataContext context)
+        [Route("users")]
+        public async Task<ActionResult<List<User>>> GetUsers([FromServices] DataContext context)
         {
+            Console.Write("Get_Users\n");
             var users = await context.Users.ToListAsync();
             return users;
         }
         
         [HttpPost]
-        [Route("")]
-        public async Task<ActionResult<User>> Post([FromServices] DataContext context, [FromBody] User model)
+        [Route("users")]
+        public async Task<ActionResult<User>> PostUser([FromServices] DataContext context, [FromBody] User model)
         {
+            Console.Write("Post_Users\n");
             if(!ModelState.IsValid) { return BadRequest(ModelState); }
 
             context.Users.Add(model);
             await context.SaveChangesAsync();
             return model;
+        }
+
+        [HttpPost]
+        [Route("login")]
+        public async Task<ActionResult<User>> PostLogin([FromServices] DataContext context, [FromBody] User model)
+        {
+            Console.Write("Post_Login\n");
+            if(!ModelState.IsValid) { return BadRequest(ModelState); }
+
+            // context.Users.Add(model);
+            // await context.SaveChangesAsync();
+            // return model;
+            return await context.Users.FirstOrDefaultAsync(aac => aac.Email == model.Email);
         }
     }
 }

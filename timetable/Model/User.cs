@@ -5,13 +5,31 @@ namespace timetable.Models
     public class User
     {
         [Key]
-        public int Id { get; set; }
+        public int UserId { get; set; }
 
-        [MaxLength(1024, ErrorMessage = "Max Lenght ofname is 1024 symbols")]
-        public string Name { get; set; }
+        // Login
+        public string Email { get; set; }
+        public string PasswordHash { get; set; }
+        public bool RememberMe { get; set; }
+        public string Token { get; set; }
 
+        // Privilege
         public string Privilege { get; set; }
 
-        public string PasswordHash { get; set; }
+        // Name
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string SurName { get; set; }
+
+        // Parents
+        public string FatherName { get; set; }
+        public string FatherPhone { get; set; }
+        public string MotherName { get; set; }
+        public string MotherPhone { get; set; }
+
+        // Others
+        public string BirthDay { get; set; }
+        public string PhoneNumber { get; set; }
+        public int GroupId { get; set; }
     }
 }
