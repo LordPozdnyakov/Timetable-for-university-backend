@@ -11,7 +11,7 @@ using timetable.Data;
 namespace timetable.Controllers
 {
     [ApiController]
-    [Route("v1/login")]
+    [Route("login")]
 
     public class LoginController : Controller
     {
