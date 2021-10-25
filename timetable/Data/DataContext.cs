@@ -7,6 +7,14 @@ namespace timetable.Data
     {
         public DataContext(DbContextOptions<DataContext> options): base(options)
         {}
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Login>()
+                .Property(p => p.LoginId)
+                .ValueGeneratedOnAdd();
+        }
+
+        public DbSet<Login> Logins { get; set; }
 
         public DbSet<User> Users { get; set; }
     }
