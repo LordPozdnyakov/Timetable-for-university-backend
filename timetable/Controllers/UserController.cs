@@ -49,10 +49,28 @@ namespace timetable.Controllers
             Console.Write("Post_Login\n");
             if(!ModelState.IsValid) { return BadRequest(ModelState); }
 
-            // context.Users.Add(model);
-            // await context.SaveChangesAsync();
-            // return model;
-            return await context.Users.FirstOrDefaultAsync(aac => aac.Email == model.Email);
+            var user = await context.Users.FirstOrDefaultAsync(aac => aac.Email == model.Email);
+            if( user == null )
+            {
+                // user not found
+                return Unauthorized();
+            }
+
+            // Check Password
+            // if( user.PasswordHash != ToHash(model.PasswordHash) )
+            if( user.PasswordHash != model.PasswordHash )
+            {
+                // password is Wrong
+                return Unauthorized();
+            }
+
+            //Create Token
+            // string user_token = GenerateToken();
+            user.RememberMe = model.RememberMe;
+            string user_token = user.Email + user.PasswordHash + user.RememberMe.ToString();
+            user.Token = user_token;
+
+            return user;
         }
     }
 }

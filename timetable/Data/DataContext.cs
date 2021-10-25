@@ -9,12 +9,10 @@ namespace timetable.Data
         {}
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Login>()
-                .Property(p => p.LoginId)
+            modelBuilder.Entity<User>()
+                .Property(p => p.UserId)
                 .ValueGeneratedOnAdd();
         }
-
-        public DbSet<Login> Logins { get; set; }
 
         public DbSet<User> Users { get; set; }
     }
