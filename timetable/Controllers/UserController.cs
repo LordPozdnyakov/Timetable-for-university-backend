@@ -10,7 +10,7 @@ using timetable.Data;
 namespace timetable.Controllers
 {
     [ApiController]
-    [Route("users")]
+    [Route("/users")]
 
     public class UserController : Controller
     {
@@ -28,6 +28,22 @@ namespace timetable.Controllers
             Console.Write("Get_Users\n");
             var users = await context.Users.ToListAsync();
             return users;
+        }
+        
+        [HttpGet]
+        [Route("{id}")]
+        public async Task<ActionResult<User>> GetUsersById([FromServices] DataContext context, [FromRoute]long id)
+        {
+            Console.Write("Get_Users/id\n");
+
+            var userItem = await _context.Users.FirstOrDefaultAsync(aac => aac.UserId == id );
+
+            if (userItem == null)
+            {
+                return NotFound();
+            }
+
+            return userItem;
         }
         
         [HttpPost]
