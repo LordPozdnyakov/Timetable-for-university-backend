@@ -30,6 +30,6 @@ namespace timetable.Models
         // Others
         public string BirthDay { get; set; }
         public string PhoneNumber { get; set; }
-        public int GroupId { get; set; }
+        public int GroupName { get; set; }
     }
 }
