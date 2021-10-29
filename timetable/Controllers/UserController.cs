@@ -11,6 +11,11 @@ using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Options;
+using timetable.Model;
+using timetable.Services;
+using AutoMapper;
+using timetable.Helpers;
+using Microsoft.AspNetCore.Authorization;
 
 namespace timetable.Controllers
 {
@@ -21,9 +26,19 @@ namespace timetable.Controllers
     {
         private DataContext _context;
         private readonly AppSettings _appSettings;
-        public UserController( DataContext context, IOptions<AppSettings> appSettings)
+        private IUserService _userService;
+        private IMapper _mapper;
+        
+        public UserController( DataContext context, 
+            //IOptions<AppSettings> appSettings,
+            IUserService userService,
+            IMapper mapper,
+            IOptions<AppSettings> appSettings)
         {
             _context = context;
+            //_appSettings = appSettings.Value;
+            _userService = userService;
+            _mapper = mapper;
             _appSettings = appSettings.Value;
         }
 
@@ -35,7 +50,28 @@ namespace timetable.Controllers
             var users = await context.Users.ToListAsync();
             return users;
         }
-        
+        //[AllowAnonymous]
+        [HttpPost("register")]
+        public async Task<IActionResult> RegisterAsync([FromBody] RegisterModel model)
+        {
+            // map model to entity
+            var user = _mapper.Map<User>(model);
+           
+            try
+            {
+                // create user
+                _userService.Create(user, model.Password);
+                EmailService emailService = new EmailService();
+                await emailService.SendEmailAsync(model.Email, "Registration on project", $"Login:{model.Email}\\Password:{model.Password}");
+                return Ok();
+            }
+            catch (AppException ex)
+            {
+                // return error message if there was an exception
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
         [HttpPost]
         [Route("users")]
         public async Task<ActionResult<User>> PostUser([FromServices] DataContext context, [FromBody] User model)
@@ -56,7 +92,7 @@ namespace timetable.Controllers
             if(!ModelState.IsValid) { return BadRequest(ModelState); }
 
             var user = await context.Users.FirstOrDefaultAsync(aac => aac.Email == model.Email);
-            if( user == null || user.PasswordHash != model.PasswordHash)
+            if( user == null || user.Password != model.Password)
             {
                 // user not found
                 return Unauthorized();
@@ -80,6 +116,7 @@ namespace timetable.Controllers
                 var tokenString = tokenHandler.WriteToken(token);
                 //model.Token = token;
                 _ = user.RememberMe = false;
+                _ = user.Token = tokenString;
 
                 return user;
 
@@ -100,6 +137,7 @@ namespace timetable.Controllers
                 var token = tokenHandler.CreateToken(tokenDescriptor);
                 var tokenString = tokenHandler.WriteToken(token);
                 _ = user.RememberMe = true;
+                _ = user.Token = tokenString;
                 //model.Token = token
                 return user;
             }

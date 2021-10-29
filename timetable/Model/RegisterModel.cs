@@ -1,21 +1,29 @@
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace timetable.Models
+namespace timetable.Model
 {
-    public class User
+    public class RegisterModel
     {
         [Key]
         public int UserId { get; set; }
 
         // Login
+        [Required]
         public string Email { get; set; }
+
+        [Required]
         public string Password { get; set; }
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }
-        public bool RememberMe { get; set; }
-        public string Token { get; set; }
+        //public bool RememberMe { get; set; }
+        //public string Token { get; set; }
 
         // Privilege
+
         public string Privilege { get; set; }
 
         // Name

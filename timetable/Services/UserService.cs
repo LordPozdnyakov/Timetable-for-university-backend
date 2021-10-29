@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using timetable.Data;
+using timetable.Helpers;
 using timetable.Models;
 
 namespace timetable.Services
@@ -25,7 +26,7 @@ namespace timetable.Services
             _context = context;
         }
 
-        public User Authenticate(string username, string password)
+       /* public User Authenticate(string username, string password)
         {
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
                 return null;
@@ -42,7 +43,7 @@ namespace timetable.Services
 
             // authentication successful
             return user;
-        }
+        }*/
 
         private bool VerifyPasswordHash(string password, string passwordHash)
         {
@@ -59,27 +60,27 @@ namespace timetable.Services
             return _context.Users.Find(id);
         }
 
-        /*public User Create(User user, string password)
+        public User Create(User user, string password)
         {
             // validation
             if (string.IsNullOrWhiteSpace(password))
                 throw new AppException("Password is required");
 
-            if (_context.Users.Any(x => x.Username == user.Username))
-                throw new AppException("Username \"" + user.Username + "\" is already taken");
+            if (_context.Users.Any(x => x.Email == user.Email))
+                throw new AppException("Email \"" + user.Email + "\" is already taken");
 
-            byte[] passwordHash, passwordSalt;
-            CreatePasswordHash(password, out passwordHash, out passwordSalt);
+            //byte[] passwordHash, passwordSalt;
+            //CreatePasswordHash(password, out passwordHash, out passwordSalt);
 
-            user.PasswordHash = passwordHash;
-            user.PasswordSalt = passwordSalt;
+            user.Password = password;
+           // user.PasswordSalt = passwordSalt;
 
             _context.Users.Add(user);
             _context.SaveChanges();
 
             return user;
         }
-
+        /*
         public void Update(User userParam, string password = null)
         {
             var user = _context.Users.Find(userParam.Id);
@@ -161,10 +162,7 @@ namespace timetable.Services
             return true;
         }
 
-        public User Create(User user, string password)
-        {
-            throw new NotImplementedException();
-        }
+       
 
         public void Update(User user, string password = null)
         {
@@ -172,6 +170,11 @@ namespace timetable.Services
         }
 
         public void Delete(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public User Authenticate(string username, string password)
         {
             throw new NotImplementedException();
         }
