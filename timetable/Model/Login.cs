@@ -27,6 +27,6 @@ namespace timetable.Models
         public string SurName { get; set; }
 
         // Others
-        public int GroupName { get; set; }
+        public string GroupName { get; set; }
     }
 }

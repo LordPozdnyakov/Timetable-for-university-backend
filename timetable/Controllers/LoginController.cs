@@ -1,9 +1,14 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
+using System.Text;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using timetable.Models;
 using timetable.Data;
 
@@ -15,10 +20,11 @@ namespace timetable.Controllers
     public class LoginController : Controller
     {
         private DataContext _context;
-
-        public LoginController( DataContext context)
+        private readonly AppSettings _appSettings;
+        public LoginController( DataContext context, IOptions<AppSettings> appSettings)
         {
             _context = context;
+            _appSettings = appSettings.Value;
         }
         
         [HttpPost]
@@ -43,10 +49,26 @@ namespace timetable.Controllers
             }
 
             // Create Token
-            user_by_login.RememberMe = model.RememberMe;
-            user_by_login.Token = GenerateToken();
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes( _appSettings.Secret );
+            var expire = (model.RememberMe) ? DateTime.UtcNow.AddDays(30) : DateTime.UtcNow.AddSeconds(2);
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(ClaimTypes.Name, user_by_login.UserId.ToString())
+                }),
+                Expires = expire,
+                SigningCredentials = new SigningCredentials(
+                    new SymmetricSecurityKey(key),
+                    SecurityAlgorithms.HmacSha256Signature )
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            var tokenString = tokenHandler.WriteToken(token);
 
-            Response.Headers.Add("Token", "\""+user_by_login.Token+"\"");
+            _ = user_by_login.RememberMe = model.RememberMe;
+
+            Response.Headers.Add("Token", "\""+tokenString+"\"");
             Login login = (Login)user_by_login;
 
             return login;
@@ -55,11 +77,6 @@ namespace timetable.Controllers
         string PasswordToHash( string Password )
         {
             return Password;
-        }
-
-        string GenerateToken()
-        {
-            return "SuperHash";
         }
     }
 }
