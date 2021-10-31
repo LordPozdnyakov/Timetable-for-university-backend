@@ -3,6 +3,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using timetable.Models;
 using timetable.Data;
@@ -22,6 +24,7 @@ namespace timetable.Controllers
         }
 
         [HttpGet]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [Route("")]
         public async Task<ActionResult<List<User>>> GetUsers([FromServices] DataContext context)
         {

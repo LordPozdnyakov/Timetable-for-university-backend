@@ -17,7 +17,10 @@ using timetable.Controllers;
 using timetable.Services;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace timetable
 {
@@ -57,18 +60,65 @@ namespace timetable
             })
             .AddJwtBearer(x =>
             {
+                Console.Write("HERE_0\n");
                 x.Events = new JwtBearerEvents
                 {
+
                     OnTokenValidated = context =>
                     {
-                        var userService = context.HttpContext.RequestServices.GetRequiredService<IUserService>();
-                        var userId = int.Parse(context.Principal.Identity.Name);
-                        var user = userService.GetById(userId);
-                        if (user == null)
+                        // Debug
+                        Console.Write("HERE_1\n");
+
+                        // Magic
+                        string token = context.Request.Headers["Authorization"];
+                        if (token.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
                         {
-                            // return unauthorized if user no longer exists
-                            context.Fail("Unauthorized");
+                            token = token.Substring("Bearer ".Length).Trim();
                         }
+                        Console.WriteLine(token);
+                        
+                        var jwtTokenHandler = new JwtSecurityTokenHandler();
+                        var principal = jwtTokenHandler.ValidateToken(
+                            token,
+                            new TokenValidationParameters
+                            {
+                                // Check Issuer
+                                ValidateIssuer = false,
+                                // ValidIssuer = "",
+
+                                // Check Audience
+                                ValidateAudience = false,
+                                // ValidAudience = "",
+                                ValidateLifetime = true,
+
+                                // Set Security-Key
+                                IssuerSigningKey = new SymmetricSecurityKey(key),
+                                ValidateIssuerSigningKey = true,
+
+                                //
+                                ClockSkew = TimeSpan.Zero
+                            },
+                            out var validatedToken
+                        );
+
+                        // Now we need to check if the token has a valid security algorithm
+                        if(validatedToken is JwtSecurityToken jwtSecurityToken)
+                        {
+                            var result = jwtSecurityToken.Header.Alg.Equals(
+                                SecurityAlgorithms.HmacSha256,
+                                StringComparison.InvariantCultureIgnoreCase
+                            );
+
+                            if(result == false)
+                            {
+                                Console.Write("HERE_2\n");
+                                context.Fail("Unauthorized");
+                            }
+                            Console.Write("HERE_3\n");
+                        }
+                        Console.Write("HERE_4\n");
+                        context.Success();
+
                         return Task.CompletedTask;
                     }
                 };
@@ -81,11 +131,11 @@ namespace timetable
                 x.TokenValidationParameters = new TokenValidationParameters
                 {
                     // Check Issuer
-                    ValidateIssuer = true,
+                    ValidateIssuer = false,
                     // ValidIssuer = "",
 
                     // Check Audience
-                    ValidateAudience = true,
+                    ValidateAudience = false,
                     // ValidAudience = "",
                     ValidateLifetime = true,
 
@@ -96,6 +146,12 @@ namespace timetable
                     //
                     ClockSkew = TimeSpan.Zero
                 };
+            });
+            services.AddAuthorization(options =>
+            {
+                options.DefaultPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
+                .RequireAuthenticatedUser()
+                .Build();
             });
         }
 
@@ -113,6 +169,7 @@ namespace timetable
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseCors(x => x

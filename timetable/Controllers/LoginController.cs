@@ -51,7 +51,7 @@ namespace timetable.Controllers
             // Create Token
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes( _appSettings.Secret );
-            var expire = (model.RememberMe) ? DateTime.UtcNow.AddDays(30) : DateTime.UtcNow.AddSeconds(2);
+            var expire = (model.RememberMe == true) ? DateTime.UtcNow.AddDays(30) : DateTime.UtcNow.AddDays(2);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new Claim[]
@@ -68,7 +68,7 @@ namespace timetable.Controllers
 
             _ = user_by_login.RememberMe = model.RememberMe;
 
-            Response.Headers.Add("Token", "\""+tokenString+"\"");
+            Response.Headers.Add("Token", tokenString);
             Login login = (Login)user_by_login;
 
             return login;
