@@ -32,6 +32,13 @@ namespace timetable
         }
 
         public IConfiguration Configuration { get; }
+        public static DateTime UnixTimeStampToDateTime( double unixTimeStamp )
+        {
+            // Unix timestamp is seconds past epoch
+            DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+            dateTime = dateTime.AddSeconds( unixTimeStamp ).ToLocalTime();
+            return dateTime;
+        }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -75,7 +82,7 @@ namespace timetable
                         {
                             token = token.Substring("Bearer ".Length).Trim();
                         }
-                        Console.WriteLine(token);
+                        // Console.WriteLine(token);
                         
                         var jwtTokenHandler = new JwtSecurityTokenHandler();
                         var principal = jwtTokenHandler.ValidateToken(
@@ -116,6 +123,24 @@ namespace timetable
                             }
                             Console.Write("HERE_3\n");
                         }
+
+                        // Will get the time stamp in unix time
+                        var utcExpiryDate = long.Parse(
+                            principal.Claims.FirstOrDefault(
+                                x => x.Type == JwtRegisteredClaimNames.Exp
+                            ).Value
+                        );
+
+                        // we convert the expiry date from seconds to the date
+                        var expDate = UnixTimeStampToDateTime(utcExpiryDate);
+
+                        if( expDate < DateTime.UtcNow )
+                        {
+                            Console.Write("HERE_5\n");
+                            context.Fail("Unauthorized");
+                            return Task.CompletedTask;
+                        }
+
                         Console.Write("HERE_4\n");
                         context.Success();
 
