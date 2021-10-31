@@ -19,6 +19,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using timetable.Services;
 using AutoMapper;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Authorization;
 
 namespace timetable
 {
@@ -29,12 +31,19 @@ namespace timetable
             Configuration = configuration;
 
         }
-
+        public static DateTime UnixTimeStampToDateTime(double unixTimeStamp)
+        {
+            // Unix timestamp is seconds past epoch
+            DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+            dateTime = dateTime.AddSeconds(unixTimeStamp).ToLocalTime();
+            return dateTime;
+        }
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
             services.AddDbContext<DataContext>(opt => opt.UseInMemoryDatabase("Database"));
             services.AddScoped<DataContext, DataContext>();
             services.AddControllers();
@@ -49,6 +58,8 @@ namespace timetable
             // configure jwt authentication
             var appSettings = appSettingsSection.Get<AppSettings>();
             var key = Encoding.ASCII.GetBytes(appSettings.Secret);
+
+            // Configure jwt authentication
             services.AddAuthentication(x =>
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -56,35 +67,116 @@ namespace timetable
             })
             .AddJwtBearer(x =>
             {
+                Console.Write("HERE_0\n");
                 x.Events = new JwtBearerEvents
                 {
 
                     OnTokenValidated = context =>
                     {
-                        var userService = context.HttpContext.RequestServices.GetRequiredService<IUserService>();
-                        var userId = int.Parse(context.Principal.Identity.Name);
-                        var user = userService.GetById(userId);
-                        if (user == null)
+                        // Debug
+                        Console.Write("HERE_1\n");
+
+                        // Magic
+                        string token = context.Request.Headers["Authorization"];
+                        if (token.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
                         {
-                            // return unauthorized if user no longer exists
-                            context.Fail("Unauthorized");
+                            token = token.Substring("Bearer ".Length).Trim();
                         }
-                       
+                        // Console.WriteLine(token);
+
+                        var jwtTokenHandler = new JwtSecurityTokenHandler();
+                        var principal = jwtTokenHandler.ValidateToken(
+                            token,
+                            new TokenValidationParameters
+                            {
+                                // Check Issuer
+                                ValidateIssuer = false,
+                                // ValidIssuer = "",
+
+                                // Check Audience
+                                ValidateAudience = false,
+                                // ValidAudience = "",
+                                ValidateLifetime = true,
+
+                                // Set Security-Key
+                                IssuerSigningKey = new SymmetricSecurityKey(key),
+                                ValidateIssuerSigningKey = true,
+
+                                //
+                                ClockSkew = TimeSpan.Zero
+                            },
+                            out var validatedToken
+                        );
+
+                        // Now we need to check if the token has a valid security algorithm
+                        if (validatedToken is JwtSecurityToken jwtSecurityToken)
+                        {
+                            var result = jwtSecurityToken.Header.Alg.Equals(
+                                SecurityAlgorithms.HmacSha256,
+                                StringComparison.InvariantCultureIgnoreCase
+                            );
+
+                            if (result == false)
+                            {
+                                Console.Write("HERE_2\n");
+                                context.Fail("Unauthorized");
+                            }
+                            Console.Write("HERE_3\n");
+                        }
+
+                        // Will get the time stamp in unix time
+                        var utcExpiryDate = long.Parse(
+                            principal.Claims.FirstOrDefault(
+                                x => x.Type == JwtRegisteredClaimNames.Exp
+                            ).Value
+                        );
+
+                        // we convert the expiry date from seconds to the date
+                        var expDate = UnixTimeStampToDateTime(utcExpiryDate);
+
+                        if (expDate < DateTime.UtcNow)
+                        {
+                            Console.Write("HERE_5\n");
+                            context.Fail("Unauthorized");
+                            return Task.CompletedTask;
+                        }
+
+                        Console.Write("HERE_4\n");
+                        context.Success();
+
                         return Task.CompletedTask;
                     }
                 };
-                x.RequireHttpsMetadata = false;
                 x.SaveToken = true;
+
+                // NOTE: means 'IsUseHttps'
+                x.RequireHttpsMetadata = false;
+
+                // Set Token Parameters
                 x.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(key),
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
+                    // Check Issuer
+                    ValidateIssuer = false,
+                    // ValidIssuer = "",
+
+                    // Check Audience
+                    ValidateAudience = false,
+                    // ValidAudience = "",
                     ValidateLifetime = true,
+
+                    // Set Security-Key
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuerSigningKey = true,
+
+                    //
                     ClockSkew = TimeSpan.Zero
-                   
                 };
+            });
+            services.AddAuthorization(options =>
+            {
+                options.DefaultPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
+                .RequireAuthenticatedUser()
+                .Build();
             });
             services.AddScoped<IUserService, UserService>();
         }

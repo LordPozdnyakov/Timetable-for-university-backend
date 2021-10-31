@@ -41,7 +41,7 @@ namespace timetable.Controllers
             _mapper = mapper;
             _appSettings = appSettings.Value;
         }
-
+        [Authorize]
         [HttpGet]
         [Route("users")]
         public async Task<ActionResult<List<User>>> GetUsers([FromServices] DataContext context)
@@ -86,69 +86,62 @@ namespace timetable.Controllers
 
         [HttpPost]
         [Route("login")]
-        public async Task<ActionResult<User>> PostLogin([FromServices] DataContext context, [FromBody] User model)
+        public async Task<ActionResult<Login>> PostLogin([FromBody] LoginRequest model)
         {
             Console.Write("Post_Login\n");
-            if(!ModelState.IsValid) { return BadRequest(ModelState); }
+            if (!ModelState.IsValid) { return BadRequest(ModelState); }
 
-            var user = await context.Users.FirstOrDefaultAsync(aac => aac.Email == model.Email);
-            if( user == null || user.Password != model.Password)
+            var user_by_login = await _context.Users.FirstOrDefaultAsync(aac => aac.Email == model.Login);
+
+            // User not found
+            if (user_by_login == null)
             {
-                // user not found
                 return Unauthorized();
             }
 
             // Check Password
-            // if( user.PasswordHash != ToHash(model.PasswordHash) )
-           if (model.RememberMe == false){
-                var tokenHandler = new JwtSecurityTokenHandler();
-                var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
-                var tokenDescriptor = new SecurityTokenDescriptor
-                {
-                    Subject = new ClaimsIdentity(new Claim[]
-                    {
-                    new Claim(ClaimTypes.Name, user.UserId.ToString())
-                    }),
-                    Expires = DateTime.UtcNow.AddSeconds(2),
-                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-                };
-                var token = tokenHandler.CreateToken(tokenDescriptor);
-                var tokenString = tokenHandler.WriteToken(token);
-                //model.Token = token;
-                _ = user.RememberMe = false;
-                _ = user.Token = tokenString;
-
-                return user;
-
-            }
-           else
+            /*if (user_by_login.PasswordHash != PasswordToHash(model.Password))
             {
-                var tokenHandler = new JwtSecurityTokenHandler();
-                var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
-                var tokenDescriptor = new SecurityTokenDescriptor
+                return Unauthorized();
+            }*/
+
+            // Create Token
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
+            var expire = (model.RememberMe == true) ? DateTime.UtcNow.AddDays(30) : DateTime.UtcNow.AddDays(2);
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new Claim[]
                 {
-                    Subject = new ClaimsIdentity(new Claim[]
-                    {
-                    new Claim(ClaimTypes.Name, user.UserId.ToString())
-                    }),
-                    Expires = DateTime.UtcNow.AddDays(30),
-                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-                };
-                var token = tokenHandler.CreateToken(tokenDescriptor);
-                var tokenString = tokenHandler.WriteToken(token);
-                _ = user.RememberMe = true;
-                _ = user.Token = tokenString;
-                //model.Token = token
-                return user;
-            }
+                    new Claim(ClaimTypes.Name, user_by_login.UserId.ToString())
+                }),
+                Expires = expire,
+                SigningCredentials = new SigningCredentials(
+                    new SymmetricSecurityKey(key),
+                    SecurityAlgorithms.HmacSha256Signature)
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            var tokenString = tokenHandler.WriteToken(token);
 
-            //Create Token
-            // string user_token = GenerateToken();
-            //user.RememberMe = model.RememberMe;
-            //string user_token = user.Email + user.PasswordHash + user.RememberMe.ToString();
-            //user.Token = user_token;
+            _ = user_by_login.RememberMe = model.RememberMe;
 
-            
+            Response.Headers.Add("Token", tokenString);
+            Login login = (Login)user_by_login;
+
+            return login;
         }
+        string PasswordToHash(string Password)
+        {
+            return Password;
+        }
+
+        //Create Token
+        // string user_token = GenerateToken();
+        //user.RememberMe = model.RememberMe;
+        //string user_token = user.Email + user.PasswordHash + user.RememberMe.ToString();
+        //user.Token = user_token;
+
+
     }
+
 }
