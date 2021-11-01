@@ -1,16 +1,13 @@
 using System;
-using System.Threading;
 using System.Threading.Tasks;
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.IdentityModel.Tokens;
-using System.Security.Claims;
-using System.Text;
-using System.Collections.Generic;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+
 using timetable.Models;
 using timetable.Data;
+
 
 namespace timetable.Controllers
 {
@@ -49,22 +46,8 @@ namespace timetable.Controllers
             }
 
             // Create Token
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes( _appSettings.Secret );
-            var expire = (model.RememberMe == true) ? DateTime.UtcNow.AddDays(30) : DateTime.UtcNow.AddDays(2);
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new Claim[]
-                {
-                    new Claim(ClaimTypes.Name, user_by_login.UserId.ToString())
-                }),
-                Expires = expire,
-                SigningCredentials = new SigningCredentials(
-                    new SymmetricSecurityKey(key),
-                    SecurityAlgorithms.HmacSha256Signature )
-            };
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            var tokenString = tokenHandler.WriteToken(token);
+            var tokenController = new TokenController(_appSettings);
+            var tokenString = tokenController.GenerateToken(user_by_login.UserId, model.RememberMe);
 
             _ = user_by_login.RememberMe = model.RememberMe;
 
