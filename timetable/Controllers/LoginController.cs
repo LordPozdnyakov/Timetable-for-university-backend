@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
+using timetable.Configuration;
 using timetable.Models;
 using timetable.Data;
 
@@ -31,7 +32,7 @@ namespace timetable.Controllers
             Console.Write("Post_Login\n");
             if(!ModelState.IsValid) { return BadRequest(ModelState); }
 
-            var user_by_login = await _context.Users.FirstOrDefaultAsync(aac => aac.Email == model.Login);
+            var user_by_login = await _context.Users.FirstOrDefaultAsync(aac => aac.Email == model.Email);
             
             // User not found
             if( user_by_login == null )

@@ -1,4 +1,4 @@
-namespace timetable.Controllers
+namespace timetable.Configuration
 {
     public class AppSettings
     {

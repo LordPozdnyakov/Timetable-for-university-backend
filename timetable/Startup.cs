@@ -14,8 +14,10 @@ using Microsoft.Extensions.Hosting;
 
 using Microsoft.OpenApi.Models;
 
-using timetable.Data;
+using timetable.Configuration;
 using timetable.Controllers;
+using timetable.Data;
+using timetable.Services;
 
 namespace timetable
 {

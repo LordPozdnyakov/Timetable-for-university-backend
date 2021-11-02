@@ -8,6 +8,8 @@ namespace timetable.Models
         public int UserId { get; set; }
 
         // Login
+        [Required]
+        [EmailAddress]
         public string Email { get; set; }
         public string PasswordHash { get; set; }
         public bool RememberMe { get; set; }
@@ -19,7 +21,7 @@ namespace timetable.Models
         // Name
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public string SurName { get; set; }
+        public string Patronymic { get; set; }
 
         // Parents
         public string FatherName { get; set; }
@@ -30,6 +32,7 @@ namespace timetable.Models
         // Others
         public string BirthDay { get; set; }
         public string PhoneNumber { get; set; }
+        public string Addres { get; set; }
         public string GroupName { get; set; }
     }
 }

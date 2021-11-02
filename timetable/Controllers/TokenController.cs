@@ -6,6 +6,8 @@ using System.Text;
 
 using Microsoft.IdentityModel.Tokens;
 
+using timetable.Configuration;
+
 
 namespace timetable.Controllers
 {
@@ -15,8 +17,28 @@ namespace timetable.Controllers
         {
             _key = Encoding.ASCII.GetBytes( appSettings.Secret );
         }
-
         static private byte[] _key { get; set; }
+
+        public TokenValidationParameters GetTokenProperty()
+        {
+            var property = new TokenValidationParameters {
+                // Check Issuer
+                ValidateIssuer = false,
+                // ValidIssuer = "",
+
+                // Check Audience
+                ValidateAudience = false,
+                // ValidAudience = "",
+                ValidateLifetime = true,
+
+                // Set Security-Key
+                IssuerSigningKey = new SymmetricSecurityKey(_key),
+                ValidateIssuerSigningKey = true,
+
+                ClockSkew = TimeSpan.Zero
+            };
+            return property;
+        }
 
         public string GenerateToken(int inUserId, bool inRememberMe )
         {
@@ -80,28 +102,7 @@ namespace timetable.Controllers
             return true;
         }
 
-        public TokenValidationParameters GetTokenProperty()
-        {
-            var property = new TokenValidationParameters {
-                // Check Issuer
-                ValidateIssuer = false,
-                // ValidIssuer = "",
-
-                // Check Audience
-                ValidateAudience = false,
-                // ValidAudience = "",
-                ValidateLifetime = true,
-
-                // Set Security-Key
-                IssuerSigningKey = new SymmetricSecurityKey(_key),
-                ValidateIssuerSigningKey = true,
-
-                ClockSkew = TimeSpan.Zero
-            };
-            return property;
-        }
-
-        public static DateTime UnixTimeStampToDateTime( double unixTimeStamp )
+        protected static DateTime UnixTimeStampToDateTime( double unixTimeStamp )
         {
             // Unix timestamp is seconds past epoch
             DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
