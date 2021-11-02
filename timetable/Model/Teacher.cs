@@ -2,10 +2,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace timetable.Models
 {
-    public class User
+    public class Teacher
     {
         [Key]
-        public int UserId { get; set; }
+        public int TeacherId { get; set; }
 
         // Login
         [Required]
@@ -24,16 +24,7 @@ namespace timetable.Models
         public string LastName { get; set; }
         public string Patronymic { get; set; }
 
-        // Parents
-        public string FatherName { get; set; }
-        public string FatherPhone { get; set; }
-        public string MotherName { get; set; }
-        public string MotherPhone { get; set; }
-
         // Others
-        public string BirthDay { get; set; }
         public string PhoneNumber { get; set; }
-        public string Addres { get; set; }
-        public string GroupName { get; set; }
     }
 }

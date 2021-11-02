@@ -2,17 +2,14 @@ using System.ComponentModel.DataAnnotations;
 
 namespace timetable.Models
 {
-    public class LoginRequest
+    public class PasswordRecovery
     {
-        [Required]
-        [EmailAddress]
-        public string Email { get; set; }
-        
         [Required]
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
         [Required]
-        public bool RememberMe { get; set; }
+        [DataType(DataType.Password)]
+        public string PasswordRepeat { get; set; }
     }
 }
