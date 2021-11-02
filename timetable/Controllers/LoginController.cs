@@ -41,7 +41,11 @@ namespace timetable.Controllers
             }
 
             // Check Password
-            if( user_by_login.PasswordHash != PasswordToHash(model.Password) )
+            if( PasswordController.VerifyPasswordHash(
+                    model.Password,
+                    user_by_login.PasswordHash,
+                    user_by_login.PasswordSalt
+                ))
             {
                 return Unauthorized();
             }
@@ -56,11 +60,6 @@ namespace timetable.Controllers
             Login login = (Login)user_by_login;
 
             return login;
-        }
-
-        string PasswordToHash( string Password )
-        {
-            return Password;
         }
     }
 }
