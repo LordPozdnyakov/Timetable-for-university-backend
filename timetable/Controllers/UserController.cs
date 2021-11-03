@@ -73,36 +73,8 @@ namespace timetable.Controllers
         }
 
 // MERGED
-        //[AllowAnonymous]
-       [HttpPost("register")]
-        public IActionResult Register([FromBody] RegisterModel model)
-        {
-            // map model to entity
-            var user = _mapper.Map<User>(model);
-            
-           // var userCreatePass = _mapper.Map<ForgotPasswordRequest>(model);
-            //var Email = _mapper.Map<ForgotPasswordRequest>(Email);
-
-            try
-            {
-                // create user
-                _userService.Create(user, model.Password);
-                _userService.CreatPassword(user, Request.Headers["origin"]);
-
-                // _userService.ForgotPassword(Email, Request.Headers["origin"]);
-                //EmailService emailService = new EmailService();
-                //await emailService.SendEmailAsync(model.Email, "Registration on project", $"Login:{model.Email}\\Password:{model.Password}");
-                return Ok();
-            }
-            catch (AppException ex)
-            {
-                // return error message if there was an exception
-                return BadRequest(new { message = ex.Message });
-            }
-        }
-
         [HttpPost("forgot-password")]
-        public IActionResult ForgotPassword(ForgotPasswordRequest model)
+        public IActionResult ForgotPassword(EmailRecovery model)
         {
             _userService.ForgotPassword(model, Request.Headers["origin"]);
             return Ok(new { message = "Please check your email for password reset instructions" });

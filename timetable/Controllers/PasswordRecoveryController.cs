@@ -29,7 +29,7 @@ namespace timetable.Controllers
         public async Task<ActionResult<StatusCodeResult>> SetNewPassword(
             [FromServices] DataContext context,
             [FromBody] PasswordRecovery model,
-            [FromQuery] TokenCode token
+            [FromQuery] ValidateResetTokenRequest token
             )
         {
             if( model.Password == model.PasswordRepeat )
