@@ -20,13 +20,11 @@ namespace timetable.Controllers
     [ApiController]
     public class ResetPassword : Controller
     {
-        
         private DataContext _context;
         private readonly AppSettings _appSettings;
         private IUserService _userService;
         private IMapper _mapper;
         private readonly UserManager<User> _userManager;
-
 
         public ResetPassword(DataContext context,
             //IOptions<AppSettings> appSettings,
@@ -43,35 +41,31 @@ namespace timetable.Controllers
             _userManager = userManager;
         }
 
-       // public IActionResult Index() => View(_userManager.Users.ToList());
+        // public IActionResult Index() => View(_userManager.Users.ToList());
 
-        [HttpGet]
-        [Route("ForgotPasword")]
-        [AllowAnonymous]
-        public IActionResult ForgotPassword()
-        {
-           
-            return Ok();
-        }
+        // [HttpGet]
+        // [Route("ForgotPasword")]
+        // [AllowAnonymous]
+        // public IActionResult ForgotPassword()
+        // {
+        //     return Ok();
+        // }
+
         [HttpPost]
         [Route("ForgotPasword")]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
         {
+            //var user = await _userManager.FindByEmailAsync(model.Email);
             
-                //var user = await _userManager.FindByEmailAsync(model.Email);
-                
-
-                var code = await .GeneratePasswordResetTokenAsync(user);
-                var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.UserId, code = code }, protocol: HttpContext.Request.Scheme);
-                return Ok(new
+            var code = await .GeneratePasswordResetTokenAsync(user);
+            var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.UserId, code = code }, protocol: HttpContext.Request.Scheme);
+            return Ok(new
                 {
                     Token = callbackUrl
                 }
-                    );
-            
-            
+            );
         }
     }
 }*/

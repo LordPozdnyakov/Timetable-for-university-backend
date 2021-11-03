@@ -28,7 +28,6 @@ namespace timetable.Controllers
         [HttpPost]
         public async Task<ActionResult<StatusCodeResult>> SendRecoveryOnEmail([FromBody] EmailRecovery model)
         {
-            Console.Write("Post_Login\n");
             if(!ModelState.IsValid) { return BadRequest(ModelState); }
 
             var user_by_login = await _context.Users.FirstOrDefaultAsync(aac => aac.Email == model.Email);

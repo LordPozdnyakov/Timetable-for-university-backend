@@ -25,7 +25,7 @@ using timetable.Helpers;
 using timetable.Model;
 using timetable.Services;
 using timetable.Configuration;
-// /MERGED
+// / MERGED
 
 namespace timetable.Controllers
 {
@@ -72,27 +72,6 @@ namespace timetable.Controllers
             return userItem;
         }
 
-// MERGED
-        [HttpPost("forgot-password")]
-        public IActionResult ForgotPassword(EmailRecovery model)
-        {
-            _userService.ForgotPassword(model, Request.Headers["origin"]);
-            return Ok(new { message = "Please check your email for password reset instructions" });
-        }
-        [HttpPost("validate-reset-token")]
-        public IActionResult ValidateResetToken(ValidateResetTokenRequest model)
-        {
-            _userService.ValidateResetToken(model);
-            return Ok(new { message = "Token is valid" });
-        }
-        [HttpPost("reset-password")]
-        public IActionResult ResetPassword(ResetPasswordRequest model)
-        {
-            _userService.ResetPassword(model);
-            return Ok(new { message = "Password reset successful, you can now login" });
-        }
-// MERGED
-
         [HttpPost]
         [Route("")]
         public async Task<ActionResult<User>> PostUser([FromServices] DataContext context, [FromBody] User model)
@@ -103,5 +82,28 @@ namespace timetable.Controllers
             await context.SaveChangesAsync();
             return model;
         }
+
+        // MERGED
+        [HttpPost("forgot-password")]
+        public IActionResult ForgotPassword(EmailRecovery model)
+        {
+            _userService.ForgotPassword(model, Request.Headers["origin"]);
+            return Ok(new { message = "Please check your email for password reset instructions" });
+        }
+
+        [HttpPost("validate-reset-token")]
+        public IActionResult ValidateResetToken(ValidateResetTokenRequest model)
+        {
+            _userService.ValidateResetToken(model);
+            return Ok(new { message = "Token is valid" });
+        }
+        
+        [HttpPost("reset-password")]
+        public IActionResult ResetPassword(ResetPasswordRequest model)
+        {
+            _userService.ResetPassword(model);
+            return Ok(new { message = "Password reset successful, you can now login" });
+        }
+        // / MERGED
     }
 }
