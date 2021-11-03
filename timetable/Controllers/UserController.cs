@@ -24,6 +24,7 @@ using AutoMapper;
 using timetable.Helpers;
 using timetable.Model;
 using timetable.Services;
+using timetable.Configuration;
 // /MERGED
 
 namespace timetable.Controllers

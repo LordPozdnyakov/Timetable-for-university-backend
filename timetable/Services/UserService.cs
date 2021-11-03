@@ -90,11 +90,11 @@ namespace timetable.Services
             if (_context.Users.Any(x => x.Email == user.Email))
                 throw new AppException("Email \"" + user.Email + "\" is already taken");
 
-            //byte[] passwordHash, passwordSalt;
-            //CreatePasswordHash(password, out passwordHash, out passwordSalt);
+            byte[] passwordHash, passwordSalt;
+            CreatePasswordHash(password, out passwordHash, out passwordSalt);
 
-            user.Password = password;
-           // user.PasswordSalt = passwordSalt;
+            user.PasswordHash = passwordHash;
+            user.PasswordSalt = passwordSalt;
 
             _context.Users.Add(user);
             _context.SaveChanges();

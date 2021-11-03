@@ -47,7 +47,7 @@ namespace timetable
              {
                  c.SwaggerDoc("v1", new OpenApiInfo { Title = "timetable", Version = "v1" });
              });
-            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies()); // MERGE
+            // services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies()); // MERGE
             var appSettingsSection = Configuration.GetSection("AppSettings");
             services.Configure<AppSettings>(appSettingsSection);
             services.AddScoped<IEmailService, EmailService>(); // MERGE

@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using MimeKit;
 using MimeKit.Text;
 using timetable.Controllers;
+using timetable.Configuration;
 
 
 namespace timetable.Services

@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace timetable.Models
@@ -7,7 +8,10 @@ namespace timetable.Models
     // MERGED
         public string ResetToken { get; set; }
         public DateTime? ResetTokenExpires { get; set; }
-// /MERGED
+        public string code { get; set; }
+        public DateTime PasswordReset { get; internal set; }
+    // / MERGED
+
         [Key]
         public int Id { get; set; }
 
@@ -39,10 +43,5 @@ namespace timetable.Models
         public string PhoneNumber { get; set; }
         public string Address { get; set; }
         public string GroupName { get; set; }
-
-        //MERGED
-        public string code { get; set; }
-        public DateTime PasswordReset { get; internal set; }
-// /MERGED
     }
 }
