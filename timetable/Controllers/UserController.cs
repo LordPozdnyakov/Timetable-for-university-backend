@@ -37,7 +37,7 @@ namespace timetable.Controllers
         [Route("/{id}")]
         public async Task<ActionResult<User>> GetUsersById([FromServices] DataContext context, [FromRoute]long id)
         {
-            var userItem = await _context.Users.FirstOrDefaultAsync(aac => aac.UserId == id );
+            var userItem = await _context.Users.FirstOrDefaultAsync(aac => aac.Id == id );
 
             if (userItem == null)
             {

@@ -10,7 +10,7 @@ namespace timetable.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>()
-                .Property(p => p.UserId)
+                .Property(p => p.Id)
                 .ValueGeneratedOnAdd();
         }
 

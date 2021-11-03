@@ -5,7 +5,7 @@ namespace timetable.Models
     public class User
     {
         [Key]
-        public int UserId { get; set; }
+        public int Id { get; set; }
 
         // Login
         [Required]
@@ -33,7 +33,7 @@ namespace timetable.Models
         // Others
         public string BirthDay { get; set; }
         public string PhoneNumber { get; set; }
-        public string Addres { get; set; }
+        public string Address { get; set; }
         public string GroupName { get; set; }
     }
 }
