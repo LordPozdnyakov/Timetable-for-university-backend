@@ -184,8 +184,6 @@ namespace timetable.Services
             return true;
         }
 
-       
-
         public void Update(User user, string password = null)
         {
             throw new NotImplementedException();
@@ -205,7 +203,6 @@ namespace timetable.Services
         {
             throw new NotImplementedException();
         }
-
    
         private string randomTokenString()
         {
@@ -215,6 +212,7 @@ namespace timetable.Services
             // convert random bytes to hex string
             return BitConverter.ToString(randomBytes).Replace("-", "");
         } 
+
         public void ForgotPassword(EmailRecovery model, string origin)
         {
             var account = _context.Users.SingleOrDefault(x => x.Email == model.Email);
@@ -232,6 +230,7 @@ namespace timetable.Services
             // send email
             sendPasswordResetEmail(account, origin, create);
         }
+
         private void sendPasswordResetEmail(User account, string origin, bool create)
         {
             string message;
@@ -263,6 +262,7 @@ namespace timetable.Services
                          {message}"
             );
         }
+
         public void ValidateResetToken(ValidateResetTokenRequest model)
         {
             var account = _context.Users.SingleOrDefault(x =>
@@ -273,6 +273,7 @@ namespace timetable.Services
                 throw new AppException("Invalid token");
 
         }
+
         public void ResetPassword(ResetPasswordRequest model)
         {
             var account = _context.Users.SingleOrDefault(x =>
@@ -291,9 +292,6 @@ namespace timetable.Services
             _context.Users.Update(account);
             _context.SaveChanges();
         }
-
-
-  
 
         public void CreatPassword(User user, string origin)
         {
