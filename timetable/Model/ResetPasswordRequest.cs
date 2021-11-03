@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace timetable.Model
+namespace timetable.Models
 {
     public class ResetPasswordRequest
     {

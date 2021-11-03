@@ -1,5 +1,4 @@
 using AutoMapper;
-using timetable.Model;
 using timetable.Models;
 
 namespace timetable.Helpers
