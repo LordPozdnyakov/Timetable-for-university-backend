@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Authorization;
 
 using timetable.Configuration;
 using timetable.Models;
@@ -13,7 +14,8 @@ using timetable.Data;
 namespace timetable.Controllers
 {
     [ApiController]
-    [Route("login")]
+    [AllowAnonymous]
+    [Route("/login")]
 
     public class LoginController : Controller
     {
@@ -26,7 +28,6 @@ namespace timetable.Controllers
         }
         
         [HttpPost]
-        [Route("")]
         public async Task<ActionResult<Login>> PostLogin([FromBody] LoginRequest model)
         {
             Console.Write("Post_Login\n");

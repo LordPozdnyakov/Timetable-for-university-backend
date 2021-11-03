@@ -42,7 +42,6 @@ namespace timetable.Controllers
 
         public string GenerateToken(int inUserId, bool inRememberMe )
         {
-            // Create Token
             var tokenHandler = new JwtSecurityTokenHandler();
             var expire = (inRememberMe == true) ? DateTime.UtcNow.AddDays(30) : DateTime.UtcNow.AddMinutes(30);
             var tokenDescriptor = new SecurityTokenDescriptor
@@ -63,7 +62,7 @@ namespace timetable.Controllers
 
         public bool VerifyToken( string token )
         {
-            // Clear token from headers
+            // Get token from headers and Clear
             if (token.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
             {
                 token = token.Substring("Bearer ".Length).Trim();

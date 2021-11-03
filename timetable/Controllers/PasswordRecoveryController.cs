@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Authorization;
 
 using timetable.Configuration;
 using timetable.Models;
@@ -13,6 +14,8 @@ using timetable.Data;
 namespace timetable.Controllers
 {
     [ApiController]
+    [AllowAnonymous]
+    [Route("/password_recovery")]
 
     public class PasswordRecoveryController: Controller
     {
@@ -23,8 +26,7 @@ namespace timetable.Controllers
         }
 
         [HttpPost]
-        [Route("/password_recovery")]
-        public async Task<StatusCodeResult> SetNewPassword(
+        public async Task<ActionResult<StatusCodeResult>> SetNewPassword(
             [FromServices] DataContext context,
             [FromBody] PasswordRecovery model,
             [FromQuery] TokenCode token
@@ -41,9 +43,9 @@ namespace timetable.Controllers
                 userItem.PasswordHash = passwordHash;
                 userItem.PasswordSalt = passwordSalt;
 
-                return Ok();
+                return new StatusCodeResult(200);
             }
-            return BadRequest();
+            return new StatusCodeResult(407);
         }
     }
 }
