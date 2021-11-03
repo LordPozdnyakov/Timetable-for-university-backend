@@ -1,10 +1,16 @@
 using System;
 using System.Threading.Tasks;
+using System.Text;
+
+using AutoMapper;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -33,20 +39,21 @@ namespace timetable
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddControllersWithViews(); // MERGE ???
             services.AddDbContext<DataContext>(opt => opt.UseInMemoryDatabase("Database"));
             services.AddScoped<DataContext, DataContext>();
             services.AddControllers();
             services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "timetable", Version = "v1" });
-            });
-            
-            // Prepare App-Settings
+             {
+                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "timetable", Version = "v1" });
+             });
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies()); // MERGE
             var appSettingsSection = Configuration.GetSection("AppSettings");
             services.Configure<AppSettings>(appSettingsSection);
-            
+            services.AddScoped<IEmailService, EmailService>(); // MERGE
+
             var appSetting = appSettingsSection.Get<AppSettings>();
-            
+
             var tokenController = new TokenController( appSetting );
 
             // Configure jwt authentication
@@ -76,7 +83,7 @@ namespace timetable
 
                 // NOTE: means 'IsUseHttps'
                 x.RequireHttpsMetadata = false;
-                
+
                 // Set Token Parameters
                 x.TokenValidationParameters = tokenController.GetTokenProperty();
             });
@@ -87,6 +94,8 @@ namespace timetable
                 .RequireAuthenticatedUser()
                 .Build();
             });
+
+            services.AddScoped<IUserService, UserService>();// MERGE
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

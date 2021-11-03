@@ -11,6 +11,21 @@ using Microsoft.EntityFrameworkCore;
 using timetable.Models;
 using timetable.Data;
 
+// MERGED
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Options;
+
+using AutoMapper;
+
+using timetable.Helpers;
+using timetable.Model;
+using timetable.Services;
+// /MERGED
+
 namespace timetable.Controllers
 {
     [ApiController]
@@ -20,10 +35,19 @@ namespace timetable.Controllers
     public class UserController : Controller
     {
         private DataContext _context;
+        private readonly AppSettings _appSettings;
+        private IUserService _userService;
+        private IMapper _mapper;
 
-        public UserController( DataContext context)
+        public UserController( DataContext context, 
+            IUserService userService,
+            IMapper mapper,
+            IOptions<AppSettings> appSettings)
         {
             _context = context;
+            _userService = userService;
+            _mapper = mapper;
+            _appSettings = appSettings.Value;
         }
 
         [HttpGet]
@@ -32,7 +56,7 @@ namespace timetable.Controllers
             var users = await context.Users.ToListAsync();
             return users;
         }
-        
+
         [HttpGet]
         [Route("/{id}")]
         public async Task<ActionResult<User>> GetUsersById([FromServices] DataContext context, [FromRoute]long id)
@@ -46,7 +70,56 @@ namespace timetable.Controllers
 
             return userItem;
         }
-        
+
+// MERGED
+        //[AllowAnonymous]
+       [HttpPost("register")]
+        public IActionResult Register([FromBody] RegisterModel model)
+        {
+            // map model to entity
+            var user = _mapper.Map<User>(model);
+            
+           // var userCreatePass = _mapper.Map<ForgotPasswordRequest>(model);
+            //var Email = _mapper.Map<ForgotPasswordRequest>(Email);
+
+            try
+            {
+                // create user
+                _userService.Create(user, model.Password);
+                _userService.CreatPassword(user, Request.Headers["origin"]);
+
+                // _userService.ForgotPassword(Email, Request.Headers["origin"]);
+                //EmailService emailService = new EmailService();
+                //await emailService.SendEmailAsync(model.Email, "Registration on project", $"Login:{model.Email}\\Password:{model.Password}");
+                return Ok();
+            }
+            catch (AppException ex)
+            {
+                // return error message if there was an exception
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpPost("forgot-password")]
+        public IActionResult ForgotPassword(ForgotPasswordRequest model)
+        {
+            _userService.ForgotPassword(model, Request.Headers["origin"]);
+            return Ok(new { message = "Please check your email for password reset instructions" });
+        }
+        [HttpPost("validate-reset-token")]
+        public IActionResult ValidateResetToken(ValidateResetTokenRequest model)
+        {
+            _userService.ValidateResetToken(model);
+            return Ok(new { message = "Token is valid" });
+        }
+        [HttpPost("reset-password")]
+        public IActionResult ResetPassword(ResetPasswordRequest model)
+        {
+            _userService.ResetPassword(model);
+            return Ok(new { message = "Password reset successful, you can now login" });
+        }
+// MERGED
+
         [HttpPost]
         [Route("")]
         public async Task<ActionResult<User>> PostUser([FromServices] DataContext context, [FromBody] User model)
