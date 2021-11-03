@@ -28,7 +28,8 @@ namespace timetable.Controllers
         private readonly AppSettings _appSettings;
         private IUserService _userService;
         private IMapper _mapper;
-        
+
+
         public UserController( DataContext context, 
             //IOptions<AppSettings> appSettings,
             IUserService userService,
@@ -40,6 +41,7 @@ namespace timetable.Controllers
             _userService = userService;
             _mapper = mapper;
             _appSettings = appSettings.Value;
+            
         }
         [Authorize]
         [HttpGet]
@@ -51,18 +53,24 @@ namespace timetable.Controllers
             return users;
         }
         //[AllowAnonymous]
-        [HttpPost("register")]
-        public async Task<IActionResult> RegisterAsync([FromBody] RegisterModel model)
+       [HttpPost("register")]
+        public IActionResult Register([FromBody] RegisterModel model)
         {
             // map model to entity
             var user = _mapper.Map<User>(model);
-           
+            
+           // var userCreatePass = _mapper.Map<ForgotPasswordRequest>(model);
+            //var Email = _mapper.Map<ForgotPasswordRequest>(Email);
+
             try
             {
                 // create user
                 _userService.Create(user, model.Password);
-                EmailService emailService = new EmailService();
-                await emailService.SendEmailAsync(model.Email, "Registration on project", $"Login:{model.Email}\\Password:{model.Password}");
+                _userService.CreatPassword(user, Request.Headers["origin"]);
+
+                // _userService.ForgotPassword(Email, Request.Headers["origin"]);
+                //EmailService emailService = new EmailService();
+                //await emailService.SendEmailAsync(model.Email, "Registration on project", $"Login:{model.Email}\\Password:{model.Password}");
                 return Ok();
             }
             catch (AppException ex)
@@ -72,6 +80,24 @@ namespace timetable.Controllers
             }
         }
 
+        [HttpPost("forgot-password")]
+        public IActionResult ForgotPassword(ForgotPasswordRequest model)
+        {
+            _userService.ForgotPassword(model, Request.Headers["origin"]);
+            return Ok(new { message = "Please check your email for password reset instructions" });
+        }
+        [HttpPost("validate-reset-token")]
+        public IActionResult ValidateResetToken(ValidateResetTokenRequest model)
+        {
+            _userService.ValidateResetToken(model);
+            return Ok(new { message = "Token is valid" });
+        }
+        [HttpPost("reset-password")]
+        public IActionResult ResetPassword(ResetPasswordRequest model)
+        {
+            _userService.ResetPassword(model);
+            return Ok(new { message = "Password reset successful, you can now login" });
+        }
         [HttpPost]
         [Route("users")]
         public async Task<ActionResult<User>> PostUser([FromServices] DataContext context, [FromBody] User model)

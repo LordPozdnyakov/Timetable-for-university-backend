@@ -10,6 +10,7 @@ namespace timetable.Helpers
         {
             //CreateMap<User, UserModel>();
             CreateMap<RegisterModel, User>();
+            CreateMap<ForgotPasswordRequest, User>();
             //CreateMap<UpdateModel, User>();
         }
     }

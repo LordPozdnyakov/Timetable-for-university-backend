@@ -1,35 +1,42 @@
 ﻿using MailKit.Net.Smtp;
+using MailKit.Security;
+using Microsoft.Extensions.Options;
 using MimeKit;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using MimeKit.Text;
+using timetable.Controllers;
+
 
 namespace timetable.Services
 {
-    public class EmailService
+    public interface IEmailService
     {
-        
-        public async Task SendEmailAsync(string email, string subject, string message)
+        void Send(string to, string subject, string html, string from = null);
+    }
+
+    public class EmailService : IEmailService
+    {
+        private readonly AppSettings _appSettings;
+
+        public EmailService(IOptions<AppSettings> appSettings)
         {
-            var emailMessage = new MimeMessage();
+            _appSettings = appSettings.Value;
+        }
 
-            emailMessage.From.Add(new MailboxAddress("Администрация сайта", "alert.dht22@gmail.com"));
-            emailMessage.To.Add(new MailboxAddress("", email));
-            emailMessage.Subject = subject;
-            emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html)
-            {
-                Text = message
-            };
+        public void Send(string to, string subject, string html, string from = null)
+        {
+            // create message
+            var email = new MimeMessage();
+            email.From.Add(MailboxAddress.Parse(from ?? _appSettings.EmailFrom));
+            email.To.Add(MailboxAddress.Parse(to));
+            email.Subject = subject;
+            email.Body = new TextPart(TextFormat.Html) { Text = html };
 
-            using (var client = new SmtpClient())
-            {
-                await client.ConnectAsync("smtp.gmail.com", 465, true);
-                await client.AuthenticateAsync("alert.dht22@gmail.com", "Vlads2033");
-                await client.SendAsync(emailMessage);
-
-                await client.DisconnectAsync(true);
-            }
+            // send email
+            using var smtp = new SmtpClient();
+            smtp.Connect(_appSettings.SmtpHost, _appSettings.SmtpPort, true);
+            smtp.Authenticate(_appSettings.SmtpUser, _appSettings.SmtpPass);
+            smtp.Send(email);
+            smtp.Disconnect(true);
         }
     }
 }

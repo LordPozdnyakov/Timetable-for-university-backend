@@ -43,7 +43,7 @@ namespace timetable
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            services.AddControllersWithViews();
             services.AddDbContext<DataContext>(opt => opt.UseInMemoryDatabase("Database"));
             services.AddScoped<DataContext, DataContext>();
             services.AddControllers();
@@ -54,6 +54,7 @@ namespace timetable
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             var appSettingsSection = Configuration.GetSection("AppSettings");
             services.Configure<AppSettings>(appSettingsSection);
+            services.AddScoped<IEmailService, EmailService>();
 
             // configure jwt authentication
             var appSettings = appSettingsSection.Get<AppSettings>();
@@ -184,17 +185,16 @@ namespace timetable
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
+           
                 app.UseDeveloperExceptionPage(); 
                  app.UseSwagger();
                  app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "timetable v1"));
-            }
+            
 
             // app.UseHttpsRedirection();
 
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseCors(x => x

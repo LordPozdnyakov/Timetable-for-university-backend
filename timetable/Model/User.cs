@@ -1,13 +1,18 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace timetable.Models
 {
+    
     public class User
     {
+        public string ResetToken { get; set; }
+        public DateTime? ResetTokenExpires { get; set; }
         [Key]
         public int UserId { get; set; }
 
         // Login
+        [EmailAddress]
         public string Email { get; set; }
         public string Password { get; set; }
         public bool RememberMe { get; set; }
@@ -31,5 +36,7 @@ namespace timetable.Models
         public string BirthDay { get; set; }
         public string PhoneNumber { get; set; }
         public string GroupName { get; set; }
+        public string code { get; set; }
+        public DateTime PasswordReset { get; internal set; }
     }
 }
