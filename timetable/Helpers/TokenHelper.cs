@@ -9,7 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using timetable.Configuration;
 
 
-namespace timetable.Controllers
+namespace timetable.Helpers
 {
     public class TokenController
     {
