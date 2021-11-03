@@ -1,6 +1,7 @@
 using AutoMapper;
 using timetable.Models;
 
+
 namespace timetable.Helpers
 {
     public class AutoMapperProfile : Profile

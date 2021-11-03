@@ -1,17 +1,20 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
+
+using AutoMapper;
+
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+
+using timetable.Data;
 using timetable.Models;
 using timetable.Services;
-using System.Configuration;
-using Microsoft.AspNetCore.Identity;
-using AutoMapper;
-using timetable.Data;
-using Microsoft.Extensions.Options;
-using Microsoft.EntityFrameworkCore;
 
 /*
 namespace timetable.Controllers

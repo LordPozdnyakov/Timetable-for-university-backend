@@ -1,10 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 
+
 namespace timetable.Models
 {
     public class Login
     {
-
         public static explicit operator Login(User that)
         {
             Login result = new Login();

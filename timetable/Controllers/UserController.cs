@@ -3,28 +3,21 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
+using AutoMapper;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-
-using timetable.Models;
-using timetable.Data;
-
-// MERGED
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 
-using AutoMapper;
-
-using timetable.Helpers;
-using timetable.Services;
 using timetable.Configuration;
-// / MERGED
+using timetable.Data;
+using timetable.Helpers;
+using timetable.Models;
+using timetable.Services;
+
 
 namespace timetable.Controllers
 {
