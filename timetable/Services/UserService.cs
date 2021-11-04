@@ -21,7 +21,7 @@ namespace timetable.Services
         void Update(User user, string password = null);
         void Delete(int id);
         Task GeneratePasswordResetTokenAsync(int userId);
-        void ForgotPassword(EmailRecovery model, string origin);
+        void ForgotPassword(RecoveryByEmail model, string origin);
         void ValidateResetToken(ValidateResetTokenRequest model);
         void ResetPassword(ResetPasswordRequest model);
         void CreatPassword(User user, string origin);
@@ -214,7 +214,7 @@ namespace timetable.Services
             return BitConverter.ToString(randomBytes).Replace("-", "");
         } 
 
-        public void ForgotPassword(EmailRecovery model, string origin)
+        public void ForgotPassword(RecoveryByEmail model, string origin)
         {
             var account = _context.Users.SingleOrDefault(x => x.Email == model.Email);
             // always return ok response to prevent email enumeration
@@ -272,7 +272,6 @@ namespace timetable.Services
 
             if (account == null)
                 throw new AppException("Invalid token");
-
         }
 
         public void ResetPassword(ResetPasswordRequest model)

@@ -29,7 +29,7 @@ namespace timetable.Controllers
         }
         
         [HttpPost]
-        public async Task<ActionResult<Login>> PostLogin([FromBody] LoginRequest model)
+        public async Task<ActionResult<LoginResponse>> PostLogin([FromBody] LoginRequest model)
         {
             Console.Write("Post_Login\n");
             if(!ModelState.IsValid) { return BadRequest(ModelState); }
@@ -59,7 +59,7 @@ namespace timetable.Controllers
             _ = user_by_login.RememberMe = model.RememberMe;
 
             Response.Headers.Add("Token", tokenString);
-            Login login = (Login)user_by_login;
+            LoginResponse login = (LoginResponse)user_by_login;
 
             return login;
         }

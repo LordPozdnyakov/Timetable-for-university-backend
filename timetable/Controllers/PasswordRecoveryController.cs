@@ -29,11 +29,10 @@ namespace timetable.Controllers
         [HttpPost]
         public async Task<ActionResult<StatusCodeResult>> SetNewPassword(
             [FromServices] DataContext context,
-            [FromBody] PasswordRecovery model,
-            [FromQuery] ValidateResetTokenRequest token
+            [FromBody] ResetPasswordRequest model
             )
         {
-            if( model.Password == model.PasswordRepeat )
+            if( model.Password == model.ConfirmPassword )
             {
                 // var userItem = await _context.Users.FirstOrDefaultAsync(aac => aac.token == token.Token );
                 var userItem = await _context.Users.FirstOrDefaultAsync();

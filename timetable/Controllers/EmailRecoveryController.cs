@@ -26,7 +26,7 @@ namespace timetable.Controllers
         }
         
         [HttpPost]
-        public async Task<ActionResult<StatusCodeResult>> SendRecoveryOnEmail([FromBody] EmailRecovery model)
+        public async Task<ActionResult<StatusCodeResult>> SendRecoveryOnEmail([FromBody] RecoveryByEmail model)
         {
             if(!ModelState.IsValid) { return BadRequest(ModelState); }
 

@@ -77,7 +77,7 @@ namespace timetable.Controllers
 
         // MERGED
         [HttpPost("forgot-password")]
-        public IActionResult ForgotPassword(EmailRecovery model)
+        public IActionResult ForgotPassword(RecoveryByEmail model)
         {
             _userService.ForgotPassword(model, Request.Headers["origin"]);
             return Ok(new { message = "Please check your email for password reset instructions" });

@@ -9,7 +9,7 @@ namespace timetable.Helpers
         public AutoMapperProfile()
         {
             CreateMap<User, User>();
-            CreateMap<EmailRecovery, User>();
+            CreateMap<RecoveryByEmail, User>();
 
             //CreateMap<User, UserModel>();
             //CreateMap<UpdateModel, User>();

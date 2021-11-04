@@ -3,11 +3,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace timetable.Models
 {
-    public class Login
+    public class LoginResponse
     {
-        public static explicit operator Login(User that)
+        public static explicit operator LoginResponse(User that)
         {
-            Login result = new Login();
+            LoginResponse result = new LoginResponse();
             
             result.Privilege = that.Privilege;
             result.FirstName = that.FirstName;
