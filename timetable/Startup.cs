@@ -56,7 +56,7 @@ namespace timetable
 
             var appSetting = appSettingsSection.Get<AppSettings>();
 
-            var tokenController = new TokenController( appSetting );
+            var tokenHelper = new TokenHelper( appSetting );
 
             // Configure jwt authentication
             services.AddAuthentication(x =>
@@ -71,7 +71,7 @@ namespace timetable
                     OnTokenValidated = context =>
                     {
                         string token = context.Request.Headers["Authorization"];
-                        bool tokenStatus = tokenController.VerifyToken(token);
+                        bool tokenStatus = tokenHelper.VerifyToken(token);
 
                         if(tokenStatus)
                             context.Success();
@@ -87,7 +87,7 @@ namespace timetable
                 x.RequireHttpsMetadata = false;
 
                 // Set Token Parameters
-                x.TokenValidationParameters = tokenController.GetTokenProperty();
+                x.TokenValidationParameters = tokenHelper.GetTokenProperty();
             });
 
             services.AddAuthorization(options =>

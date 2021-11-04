@@ -11,9 +11,9 @@ using timetable.Configuration;
 
 namespace timetable.Helpers
 {
-    public class TokenController
+    public class TokenHelper
     {
-        public TokenController( AppSettings appSettings )
+        public TokenHelper( AppSettings appSettings )
         {
             _key = Encoding.ASCII.GetBytes( appSettings.Secret );
         }

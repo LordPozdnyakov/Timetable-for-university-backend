@@ -53,8 +53,8 @@ namespace timetable.Controllers
             }
 
             // Create Token
-            var tokenController = new TokenController(_appSettings);
-            var tokenString = tokenController.GenerateToken(user_by_login.Id, model.RememberMe);
+            var tokenHelper = new TokenHelper(_appSettings);
+            var tokenString = tokenHelper.GenerateToken(user_by_login.Id, model.RememberMe);
 
             _ = user_by_login.RememberMe = model.RememberMe;
 
