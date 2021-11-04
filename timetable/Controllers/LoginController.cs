@@ -43,7 +43,7 @@ namespace timetable.Controllers
             }
 
             // Check Password
-            if( PasswordController.VerifyPasswordHash(
+            if( PasswordHelper.VerifyPasswordHash(
                     model.Password,
                     user_by_login.PasswordHash,
                     user_by_login.PasswordSalt

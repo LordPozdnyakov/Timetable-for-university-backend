@@ -38,7 +38,7 @@ namespace timetable.Controllers
                 var userItem = await _context.Users.FirstOrDefaultAsync();
                 
                 byte[] passwordHash, passwordSalt;
-                PasswordController.CreatePasswordHash(model.Password, out passwordHash, out passwordSalt);
+                PasswordHelper.CreatePasswordHash(model.Password, out passwordHash, out passwordSalt);
 
                 userItem.PasswordHash = passwordHash;
                 userItem.PasswordSalt = passwordSalt;
