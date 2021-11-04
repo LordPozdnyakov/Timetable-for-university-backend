@@ -44,18 +44,17 @@ namespace timetable.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<User>>> GetUsers([FromServices] DataContext context)
+        public List<User> GetUsers([FromServices] DataContext context)
         {
-            var users = await context.Users.ToListAsync();
+            var users = _userService.GetAll();
             return users;
         }
 
         [HttpGet]
         [Route("/{id}")]
-        public async Task<ActionResult<User>> GetUsersById([FromServices] DataContext context, [FromRoute]long id)
+        public ActionResult<User> GetUsersById([FromServices] DataContext context, [FromRoute]int id)
         {
-            var userItem = await _context.Users.FirstOrDefaultAsync(aac => aac.Id == id );
-
+            var userItem = _userService.GetById(id);
             if (userItem == null)
             {
                 return NotFound();
@@ -66,12 +65,12 @@ namespace timetable.Controllers
 
         [HttpPost]
         [Route("")]
-        public async Task<ActionResult<User>> PostUser([FromServices] DataContext context, [FromBody] User model)
+        public ActionResult<User> PostUser([FromServices] DataContext context, [FromBody] User model)
         {
             if(!ModelState.IsValid) { return BadRequest(ModelState); }
 
-            context.Users.Add(model);
-            await context.SaveChangesAsync();
+            _userService.Create(model/*, ""*/);
+
             return model;
         }
 

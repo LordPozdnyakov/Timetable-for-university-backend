@@ -18,8 +18,8 @@ namespace timetable.Services
         User Authenticate(string username, string password); // NotImplemented
 
         // CRUD-Methods
-        User Create(User user, string password);
-        IEnumerable<User> GetAll();
+        User Create(User user/*, string password*/);
+        List<User> GetAll();
         User GetById(int id);
         void Update(User user, string password = null); // NotImplemented
         void Delete(int id); // NotImplemented
@@ -66,20 +66,22 @@ namespace timetable.Services
         }
 
         // CRUD-Methods
-        public User Create(User user, string password)
+        public User Create( User user/*, string password*/ )
         {
             // validation
-            if (string.IsNullOrWhiteSpace(password))
-                throw new AppException("Password is required");
+            // if (string.IsNullOrWhiteSpace(password))
+                // throw new AppException("Password is required");
 
             if (_context.Users.Any(x => x.Email == user.Email))
                 throw new AppException("Email \"" + user.Email + "\" is already taken");
+            
+            user.isPasswordSet = false;
 
-            byte[] passwordHash, passwordSalt;
-            PasswordHelper.CreatePasswordHash(password, out passwordHash, out passwordSalt);
+            // byte[] passwordHash, passwordSalt;
+            // PasswordHelper.CreatePasswordHash(password, out passwordHash, out passwordSalt);
 
-            user.PasswordHash = passwordHash;
-            user.PasswordSalt = passwordSalt;
+            // user.PasswordHash = passwordHash;
+            // user.PasswordSalt = passwordSalt;
 
             _context.Users.Add(user);
             _context.SaveChanges();
@@ -87,14 +89,14 @@ namespace timetable.Services
             return user;
         }
 
-        public IEnumerable<User> GetAll()
+        public List<User> GetAll()
         {
-            return _context.Users;
+            return _context.Users.ToList();
         }
 
         public User GetById(int id)
         {
-            return _context.Users.Find(id);
+            return _context.Users.FirstOrDefault(aac => aac.Id == id );
         }
 
         public void Update(User user, string password = null)
