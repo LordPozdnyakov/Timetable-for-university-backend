@@ -24,13 +24,16 @@ namespace timetable.Controllers
         private DataContext _context;
         private readonly AppSettings _appSettings;
         private IUserService _userService;
+        private IPasswordService _passwordService;
         public PasswordController(
             DataContext context, 
             IUserService userService,
+            IPasswordService passwordService,
             IOptions<AppSettings> appSettings)
         {
             _context = context;
             _userService = userService;
+            _passwordService = passwordService;
             _appSettings = appSettings.Value;
         }
 
@@ -38,7 +41,7 @@ namespace timetable.Controllers
         [Route("/reset-password")]
         public IActionResult ResetPassword(ResetPasswordRequest model)
         {
-            _userService.ResetPassword(model);
+            _passwordService.ResetPassword(model);
             return Ok(new { message = "Password reset successful, you can now login" });
         }
 
@@ -46,7 +49,7 @@ namespace timetable.Controllers
         [Route("/forgot-password")]
         public IActionResult ForgotPassword(RecoveryByEmail model)
         {
-            _userService.ForgotPassword(model, Request.Headers["origin"]);
+            _passwordService.ForgotPassword(model, Request.Headers["origin"]);
             return Ok(new { message = "Please check your email for password reset instructions" });
         }
     }

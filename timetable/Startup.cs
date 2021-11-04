@@ -41,7 +41,7 @@ namespace timetable
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews(); // MERGE ???
+            // services.AddControllersWithViews(); // MERGE ???
             services.AddDbContext<DataContext>(opt => opt.UseInMemoryDatabase("Database"));
             services.AddScoped<DataContext, DataContext>();
             services.AddControllers();
@@ -52,7 +52,8 @@ namespace timetable
             // services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies()); // MERGE
             var appSettingsSection = Configuration.GetSection("AppSettings");
             services.Configure<AppSettings>(appSettingsSection);
-            services.AddScoped<IEmailService, EmailService>(); // MERGE
+            services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IPasswordService, PasswordService>();
 
             var appSetting = appSettingsSection.Get<AppSettings>();
 

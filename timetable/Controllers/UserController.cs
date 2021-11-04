@@ -30,15 +30,18 @@ namespace timetable.Controllers
         private DataContext _context;
         private readonly AppSettings _appSettings;
         private IUserService _userService;
+        private IPasswordService _passwordService;
         private IMapper _mapper;
 
         public UserController( DataContext context, 
             IUserService userService,
+            IPasswordService passwordService,
             IMapper mapper,
             IOptions<AppSettings> appSettings)
         {
             _context = context;
             _userService = userService;
+            _passwordService = passwordService;
             _mapper = mapper;
             _appSettings = appSettings.Value;
         }
@@ -69,7 +72,7 @@ namespace timetable.Controllers
             if(!ModelState.IsValid) { return BadRequest(ModelState); }
 
             _userService.Create(model/*, ""*/);
-            _userService.CreateInvitationPassword(model, Request.Headers["origin"]);
+            _passwordService.CreateInvitationPassword(model, Request.Headers["origin"]);
 
             return model;
         }
