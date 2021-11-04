@@ -25,11 +25,9 @@ namespace timetable.Services
         void Delete(int id); // NotImplemented
 
         // Helpers-Method for Password
-        void CreatPassword(User user, string origin);
+        void CreateInvitationPassword(User user, string origin);
         void ForgotPassword(RecoveryByEmail model, string origin);
         void ResetPassword(ResetPasswordRequest model);
-        Task GeneratePasswordResetTokenAsync(int userId); // NotImplemented
-        void ValidateResetToken(ValidateResetTokenRequest model);
     }
 
     public class UserService : IUserService
@@ -153,9 +151,11 @@ namespace timetable.Services
 
 
         // Public Helpers-Method for Password
-        public void CreatPassword(User user, string origin)
+        public void CreateInvitationPassword(User user, string origin)
         {
-            var account = _context.Users.SingleOrDefault(x => x.Email == user.Email);
+            // check if email exist
+            var account = _context.Users.SingleOrDefault(x =>
+                x.Email == user.Email);
 
             // always return ok response to prevent email enumeration
             if (account == null) return;
@@ -167,12 +167,17 @@ namespace timetable.Services
             _context.Users.Update(account);
             _context.SaveChanges();
             bool create = true;
+
+            // send email
             sendPasswordResetEmail(account, origin, create);
         }
 
         public void ForgotPassword(RecoveryByEmail model, string origin)
         {
-            var account = _context.Users.SingleOrDefault(x => x.Email == model.Email);
+            // check if email exist
+            var account = _context.Users.SingleOrDefault(x => 
+                x.Email == model.Email);
+
             // always return ok response to prevent email enumeration
             if (account == null) return;
 
@@ -187,16 +192,6 @@ namespace timetable.Services
             // send email
             sendPasswordResetEmail(account, origin, create);
         }
-        /*public User ForgotPass(User user)
-        {
-            if (_context.Users.Any(x => x.Email == user.Email))
-            {
-                //var code = await _userManager.GeneratePasswordResetTokenAsync(user);
-                var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.UserId, code = code }, protocol: HttpContext.Request.Scheme);
-            }
-
-            return Email;
-        }*/
 
         public void ResetPassword(ResetPasswordRequest model)
         {
@@ -207,29 +202,19 @@ namespace timetable.Services
             if (account == null)
                 throw new AppException("Invalid token");
 
-            // Update password and remove reset token
-            // account.PasswordHash = BC.HashPassword(model.Password);
+            // Update password
+            byte[] passwordHash, passwordSalt;
+            PasswordHelper.CreatePasswordHash(model.Password, out passwordHash, out passwordSalt);
+            account.PasswordHash = passwordHash;
+            account.PasswordSalt = passwordSalt;
+
+            //  Remove reset-token
             account.PasswordReset = DateTime.UtcNow;
             account.ResetToken = null;
             account.ResetTokenExpires = null;
 
             _context.Users.Update(account);
             _context.SaveChanges();
-        }
-
-        public Task GeneratePasswordResetTokenAsync(int userId)
-        {
-            throw new NotImplementedException();
-        }
-        
-        public void ValidateResetToken(ValidateResetTokenRequest model)
-        {
-            var account = _context.Users.SingleOrDefault(x =>
-                x.ResetToken == model.Token &&
-                x.ResetTokenExpires > DateTime.UtcNow);
-
-            if (account == null)
-                throw new AppException("Invalid token");
         }
 
 

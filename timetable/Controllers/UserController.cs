@@ -64,37 +64,14 @@ namespace timetable.Controllers
         }
 
         [HttpPost]
-        [Route("")]
         public ActionResult<User> PostUser([FromServices] DataContext context, [FromBody] User model)
         {
             if(!ModelState.IsValid) { return BadRequest(ModelState); }
 
             _userService.Create(model/*, ""*/);
+            _userService.CreateInvitationPassword(model, Request.Headers["origin"]);
 
             return model;
         }
-
-        // MERGED
-        [HttpPost("forgot-password")]
-        public IActionResult ForgotPassword(RecoveryByEmail model)
-        {
-            _userService.ForgotPassword(model, Request.Headers["origin"]);
-            return Ok(new { message = "Please check your email for password reset instructions" });
-        }
-
-        [HttpPost("validate-reset-token")]
-        public IActionResult ValidateResetToken(ValidateResetTokenRequest model)
-        {
-            _userService.ValidateResetToken(model);
-            return Ok(new { message = "Token is valid" });
-        }
-        
-        [HttpPost("reset-password")]
-        public IActionResult ResetPassword(ResetPasswordRequest model)
-        {
-            _userService.ResetPassword(model);
-            return Ok(new { message = "Password reset successful, you can now login" });
-        }
-        // / MERGED
     }
 }
