@@ -2,8 +2,6 @@ using System;
 using System.Threading.Tasks;
 using System.Text;
 
-using AutoMapper;
-
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -41,10 +39,6 @@ namespace timetable
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // Merged. Needed ???
-            // services.AddControllersWithViews();
-            // services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-
             services.AddDbContext<DataContext>(opt => opt.UseInMemoryDatabase("Database"));
             services.AddScoped<DataContext, DataContext>();
             services.AddControllers();

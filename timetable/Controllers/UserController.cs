@@ -3,8 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-using AutoMapper;
-
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -31,18 +29,15 @@ namespace timetable.Controllers
         private readonly AppSettings _appSettings;
         private IUserService _userService;
         private IPasswordService _passwordService;
-        private IMapper _mapper;
 
         public UserController( DataContext context, 
             IUserService userService,
             IPasswordService passwordService,
-            IMapper mapper,
             IOptions<AppSettings> appSettings)
         {
             _context = context;
             _userService = userService;
             _passwordService = passwordService;
-            _mapper = mapper;
             _appSettings = appSettings.Value;
         }
 
@@ -71,10 +66,16 @@ namespace timetable.Controllers
         {
             if(!ModelState.IsValid) { return BadRequest(ModelState); }
 
-            _userService.Create(model/*, ""*/);
-            _passwordService.CreateInvitationPassword(model, Request.Headers["origin"]);
-
-            return model;
+            try
+            {
+                _userService.Create(model/*, ""*/);
+                _passwordService.CreateInvitationPassword(model, Request.Headers["origin"]);
+                return model;
+            }
+            catch(AppException ex)
+            {
+                return BadRequest();
+            }
         }
     }
 }
