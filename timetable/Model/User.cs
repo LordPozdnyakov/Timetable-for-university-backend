@@ -1,4 +1,6 @@
+using System;
 using System.ComponentModel.DataAnnotations;
+
 
 namespace timetable.Models
 {
@@ -13,8 +15,15 @@ namespace timetable.Models
         public string Email { get; set; }
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }
+        public bool isPasswordSet { get; set; }
         public bool RememberMe { get; set; }
         public string Token { get; set; }
+
+        // Password Service
+        public string ResetToken { get; set; }
+        public DateTime? ResetTokenExpires { get; set; }
+        public string code { get; set; }
+        public DateTime PasswordReset { get; internal set; }
 
         // Privilege
         public string Privilege { get; set; }

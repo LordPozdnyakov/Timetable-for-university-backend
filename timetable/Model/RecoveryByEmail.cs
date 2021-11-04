@@ -1,8 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 
+
 namespace timetable.Models
 {
-    public class EmailRecovery
+    public class RecoveryByEmail
     {
         [Required]
         [EmailAddress]

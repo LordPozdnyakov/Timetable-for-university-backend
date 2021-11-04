@@ -1,15 +1,21 @@
 using System.ComponentModel.DataAnnotations;
 
+
 namespace timetable.Models
 {
-    public class PasswordRecovery
+    public class ResetPasswordRequest
     {
         [Required]
+        public string Token { get; set; }
+
+        [Required]
         [DataType(DataType.Password)]
+        [MinLength(6)]
         public string Password { get; set; }
 
         [Required]
         [DataType(DataType.Password)]
-        public string PasswordRepeat { get; set; }
+        [Compare("Password")]
+        public string ConfirmPassword { get; set; }
     }
 }

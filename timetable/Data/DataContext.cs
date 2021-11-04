@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using timetable.Models;
 
+
 namespace timetable.Data
 {
     public class DataContext: DbContext

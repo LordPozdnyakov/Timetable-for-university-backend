@@ -1,43 +1,56 @@
 using System;
-using System.Linq;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
+using System.Threading.Tasks;
 
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Authorization;
+
 
 using timetable.Configuration;
+using timetable.Data;
+using timetable.Helpers;
+using timetable.Models;
+using timetable.Services;
 
 
 namespace timetable.Controllers
 {
-    public static class PasswordController
+    [ApiController]
+    [AllowAnonymous]
+
+    public class PasswordController : Controller
     {
-        public static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+        private DataContext _context;
+        private readonly AppSettings _appSettings;
+        private IUserService _userService;
+        private IPasswordService _passwordService;
+        public PasswordController(
+            DataContext context, 
+            IUserService userService,
+            IPasswordService passwordService,
+            IOptions<AppSettings> appSettings)
         {
-            var hmac = new System.Security.Cryptography.HMACSHA512();
-
-            passwordSalt = hmac.Key;
-            passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+            _context = context;
+            _userService = userService;
+            _passwordService = passwordService;
+            _appSettings = appSettings.Value;
         }
 
-        public static bool VerifyPasswordHash(string password, byte[] storedHash, byte[] storedSalt)
+        [HttpPost]
+        [Route("/reset-password")]
+        public IActionResult ResetPassword(ResetPasswordRequest model)
         {
-            var hmac = new System.Security.Cryptography.HMACSHA512(storedSalt);
-            var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-
-            return CmpBytes( computedHash, storedHash, computedHash.Length );
+            _passwordService.ResetPassword(model);
+            return Ok(new { message = "Password reset successful, you can now login" });
         }
 
-        public static bool CmpBytes( byte[] inLeft, byte[] inRight, int inLenght )
+        [HttpPost]
+        [Route("/forgot-password")]
+        public IActionResult ForgotPassword(RecoveryByEmail model)
         {
-            for (int i = 0; i < inLenght; i++)
-            {
-                if (inLeft[i] != inRight[i]) return false;
-            }
-
-            return true;
+            _passwordService.ForgotPassword(model, Request.Headers["origin"]);
+            return Ok(new { message = "Please check your email for password reset instructions" });
         }
-       
     }
 }

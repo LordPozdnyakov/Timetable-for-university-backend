@@ -1,10 +1,16 @@
 using System;
 using System.Threading.Tasks;
+using System.Text;
+
+using AutoMapper;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -18,6 +24,8 @@ using timetable.Configuration;
 using timetable.Controllers;
 using timetable.Data;
 using timetable.Services;
+using timetable.Helpers;
+
 
 namespace timetable
 {
@@ -33,6 +41,10 @@ namespace timetable
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Merged. Needed ???
+            // services.AddControllersWithViews();
+            // services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
             services.AddDbContext<DataContext>(opt => opt.UseInMemoryDatabase("Database"));
             services.AddScoped<DataContext, DataContext>();
             services.AddControllers();
@@ -40,14 +52,15 @@ namespace timetable
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "timetable", Version = "v1" });
             });
-            
-            // Prepare App-Settings
+
             var appSettingsSection = Configuration.GetSection("AppSettings");
             services.Configure<AppSettings>(appSettingsSection);
-            
+            services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IPasswordService, PasswordService>();
+
             var appSetting = appSettingsSection.Get<AppSettings>();
-            
-            var tokenController = new TokenController( appSetting );
+
+            var tokenHelper = new TokenHelper( appSetting );
 
             // Configure jwt authentication
             services.AddAuthentication(x =>
@@ -62,7 +75,7 @@ namespace timetable
                     OnTokenValidated = context =>
                     {
                         string token = context.Request.Headers["Authorization"];
-                        bool tokenStatus = tokenController.VerifyToken(token);
+                        bool tokenStatus = tokenHelper.VerifyToken(token);
 
                         if(tokenStatus)
                             context.Success();
@@ -76,9 +89,9 @@ namespace timetable
 
                 // NOTE: means 'IsUseHttps'
                 x.RequireHttpsMetadata = false;
-                
+
                 // Set Token Parameters
-                x.TokenValidationParameters = tokenController.GetTokenProperty();
+                x.TokenValidationParameters = tokenHelper.GetTokenProperty();
             });
 
             services.AddAuthorization(options =>
@@ -87,6 +100,8 @@ namespace timetable
                 .RequireAuthenticatedUser()
                 .Build();
             });
+
+            services.AddScoped<IUserService, UserService>();// MERGE
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

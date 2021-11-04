@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using timetable.Configuration;
 using timetable.Models;
 using timetable.Data;
+using timetable.Helpers;
 
 
 namespace timetable.Controllers
@@ -28,7 +29,7 @@ namespace timetable.Controllers
         }
         
         [HttpPost]
-        public async Task<ActionResult<Login>> PostLogin([FromBody] LoginRequest model)
+        public async Task<ActionResult<LoginResponse>> PostLogin([FromBody] LoginRequest model)
         {
             Console.Write("Post_Login\n");
             if(!ModelState.IsValid) { return BadRequest(ModelState); }
@@ -42,7 +43,7 @@ namespace timetable.Controllers
             }
 
             // Check Password
-            if( PasswordController.VerifyPasswordHash(
+            if( PasswordHelper.VerifyPasswordHash(
                     model.Password,
                     user_by_login.PasswordHash,
                     user_by_login.PasswordSalt
@@ -52,13 +53,13 @@ namespace timetable.Controllers
             }
 
             // Create Token
-            var tokenController = new TokenController(_appSettings);
-            var tokenString = tokenController.GenerateToken(user_by_login.Id, model.RememberMe);
+            var tokenHelper = new TokenHelper(_appSettings);
+            var tokenString = tokenHelper.GenerateToken(user_by_login.Id, model.RememberMe);
 
             _ = user_by_login.RememberMe = model.RememberMe;
 
             Response.Headers.Add("Token", tokenString);
-            Login login = (Login)user_by_login;
+            LoginResponse login = (LoginResponse)user_by_login;
 
             return login;
         }

@@ -3,13 +3,21 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
+using AutoMapper;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 
-using timetable.Models;
+using timetable.Configuration;
 using timetable.Data;
+using timetable.Helpers;
+using timetable.Models;
+using timetable.Services;
+
 
 namespace timetable.Controllers
 {
@@ -20,25 +28,36 @@ namespace timetable.Controllers
     public class UserController : Controller
     {
         private DataContext _context;
+        private readonly AppSettings _appSettings;
+        private IUserService _userService;
+        private IPasswordService _passwordService;
+        private IMapper _mapper;
 
-        public UserController( DataContext context)
+        public UserController( DataContext context, 
+            IUserService userService,
+            IPasswordService passwordService,
+            IMapper mapper,
+            IOptions<AppSettings> appSettings)
         {
             _context = context;
+            _userService = userService;
+            _passwordService = passwordService;
+            _mapper = mapper;
+            _appSettings = appSettings.Value;
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<User>>> GetUsers([FromServices] DataContext context)
+        public List<User> GetUsers([FromServices] DataContext context)
         {
-            var users = await context.Users.ToListAsync();
+            var users = _userService.GetAll();
             return users;
         }
-        
+
         [HttpGet]
         [Route("/{id}")]
-        public async Task<ActionResult<User>> GetUsersById([FromServices] DataContext context, [FromRoute]long id)
+        public ActionResult<User> GetUsersById([FromServices] DataContext context, [FromRoute]int id)
         {
-            var userItem = await _context.Users.FirstOrDefaultAsync(aac => aac.Id == id );
-
+            var userItem = _userService.GetById(id);
             if (userItem == null)
             {
                 return NotFound();
@@ -46,15 +65,15 @@ namespace timetable.Controllers
 
             return userItem;
         }
-        
+
         [HttpPost]
-        [Route("")]
-        public async Task<ActionResult<User>> PostUser([FromServices] DataContext context, [FromBody] User model)
+        public ActionResult<User> PostUser([FromServices] DataContext context, [FromBody] User model)
         {
             if(!ModelState.IsValid) { return BadRequest(ModelState); }
 
-            context.Users.Add(model);
-            await context.SaveChangesAsync();
+            _userService.Create(model/*, ""*/);
+            _passwordService.CreateInvitationPassword(model, Request.Headers["origin"]);
+
             return model;
         }
     }

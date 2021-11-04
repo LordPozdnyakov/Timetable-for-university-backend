@@ -9,11 +9,11 @@ using Microsoft.IdentityModel.Tokens;
 using timetable.Configuration;
 
 
-namespace timetable.Controllers
+namespace timetable.Helpers
 {
-    public class TokenController
+    public class TokenHelper
     {
-        public TokenController( AppSettings appSettings )
+        public TokenHelper( AppSettings appSettings )
         {
             _key = Encoding.ASCII.GetBytes( appSettings.Secret );
         }
