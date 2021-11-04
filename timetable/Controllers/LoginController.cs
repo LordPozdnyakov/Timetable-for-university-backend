@@ -16,7 +16,7 @@ namespace timetable.Controllers
 {
     [ApiController]
     [AllowAnonymous]
-    [Route("/login")]
+    [Route("/user/login")]
 
     public class LoginController : Controller
     {
@@ -27,7 +27,7 @@ namespace timetable.Controllers
             _context = context;
             _appSettings = appSettings.Value;
         }
-        
+
         [HttpPost]
         public async Task<ActionResult<LoginResponse>> PostLogin([FromBody] LoginRequest model)
         {
@@ -35,7 +35,7 @@ namespace timetable.Controllers
             if(!ModelState.IsValid) { return BadRequest(ModelState); }
 
             var user_by_login = await _context.Users.FirstOrDefaultAsync(aac => aac.Email == model.Email);
-            
+
             // User not found
             if( user_by_login == null )
             {
@@ -47,7 +47,7 @@ namespace timetable.Controllers
                     model.Password,
                     user_by_login.PasswordHash,
                     user_by_login.PasswordSalt
-                ))
+                ) == false )
             {
                 return Unauthorized();
             }

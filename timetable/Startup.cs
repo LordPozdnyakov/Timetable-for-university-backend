@@ -49,6 +49,10 @@ namespace timetable
 
             var appSettingsSection = Configuration.GetSection("AppSettings");
             services.Configure<AppSettings>(appSettingsSection);
+            services.AddScoped<IDefaultUserService, DefaultUserService>();
+            services.AddTransient<DefaultUserService>();
+
+            services.AddScoped<IUserService, UserService>();// MERGE
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IPasswordService, PasswordService>();
 
@@ -94,12 +98,10 @@ namespace timetable
                 .RequireAuthenticatedUser()
                 .Build();
             });
-
-            services.AddScoped<IUserService, UserService>();// MERGE
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DefaultUserService x)
         {
             if (env.IsDevelopment())
             {
@@ -107,6 +109,8 @@ namespace timetable
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "timetable v1"));
             }
+
+            x.CreateDefaultUser();
 
             // app.UseHttpsRedirection();
 

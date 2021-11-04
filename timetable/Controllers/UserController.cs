@@ -74,6 +74,7 @@ namespace timetable.Controllers
             }
             catch(AppException ex)
             {
+                var fix = ex.ToString();
                 return BadRequest();
             }
         }
