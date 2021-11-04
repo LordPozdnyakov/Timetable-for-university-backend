@@ -6,13 +6,6 @@ namespace timetable.Models
 {
     public class User
     {
-    // MERGED
-        public string ResetToken { get; set; }
-        public DateTime? ResetTokenExpires { get; set; }
-        public string code { get; set; }
-        public DateTime PasswordReset { get; internal set; }
-    // / MERGED
-
         [Key]
         public int Id { get; set; }
 
@@ -25,6 +18,12 @@ namespace timetable.Models
         public bool isPasswordSet { get; set; }
         public bool RememberMe { get; set; }
         public string Token { get; set; }
+
+        // Password Service
+        public string ResetToken { get; set; }
+        public DateTime? ResetTokenExpires { get; set; }
+        public string code { get; set; }
+        public DateTime PasswordReset { get; internal set; }
 
         // Privilege
         public string Privilege { get; set; }
