@@ -16,7 +16,7 @@ namespace timetable.Controllers
 {
     [ApiController]
     [AllowAnonymous]
-    [Route("/user/login")]
+    [Route("/login")]
 
     public class LoginController : Controller
     {
@@ -58,8 +58,10 @@ namespace timetable.Controllers
 
             _ = user_by_login.RememberMe = model.RememberMe;
 
-            Response.Headers.Add("Token", tokenString);
+            // Response.Headers.Add("Token", tokenString);
+
             LoginResponse login = (LoginResponse)user_by_login;
+            login.Token = tokenString;
 
             return login;
         }

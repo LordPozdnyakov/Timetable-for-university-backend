@@ -21,7 +21,6 @@ namespace timetable.Controllers
 {
     [ApiController]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    [Route("/users")]
 
     public class UserController : Controller
     {
@@ -42,6 +41,7 @@ namespace timetable.Controllers
         }
 
         [HttpGet]
+        [Route("/users")]
         public List<User> GetUsers([FromServices] DataContext context)
         {
             var users = _userService.GetAll();
@@ -49,7 +49,7 @@ namespace timetable.Controllers
         }
 
         [HttpGet]
-        [Route("/{id}")]
+        [Route("/users/{id}")]
         public ActionResult<User> GetUsersById([FromServices] DataContext context, [FromRoute]int id)
         {
             var userItem = _userService.GetById(id);
@@ -62,6 +62,7 @@ namespace timetable.Controllers
         }
 
         [HttpPost]
+        [Route("/users")]
         public ActionResult<User> PostUser([FromServices] DataContext context, [FromBody] User model)
         {
             if(!ModelState.IsValid) { return BadRequest(ModelState); }

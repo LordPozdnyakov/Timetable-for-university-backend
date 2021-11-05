@@ -118,19 +118,19 @@ namespace timetable.Services
             {   
                 if (!string.IsNullOrEmpty(origin))
                 {
-                    var resetUrl = $"{origin}/account/reset-password?token={account.ResetToken}";
+                    var resetUrl = $"{origin}/recovery/password?token={account.ResetToken}";
                     message = $@"<p>Please click the below link to reset your password, the link will be valid for 20 day:</p>
                              <p><a href=""{resetUrl}"">{resetUrl}</a></p>";
                 }
                 else
                 {
-                    message = $@"<p>Please use the below token to reset your password with the <code>/accounts/reset-password</code> api route:</p>
+                    message = $@"<p>Please use the below token to reset your password with the <code>/reset-password</code> api route:</p>
                              <p><code>{account.ResetToken}</code></p>";
                 }
             }
             else 
             {
-                var resetUrl = $"{origin}/account/reset-password?token={account.ResetToken}";
+                var resetUrl = $"{origin}/recovery/password?token={account.ResetToken}";
                 message = $@"<p>To complete registrations follow the link, the link will be valid for 20 day:</p>
                              <p><a href=""{resetUrl}"">{resetUrl}</a></p>";
             }
