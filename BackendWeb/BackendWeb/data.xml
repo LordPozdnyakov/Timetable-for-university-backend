@@ -1,0 +1,60 @@
+<xml version="1.0" encording="utf-8">
+  <university>
+    <user>
+      <id>1</id>>
+      <surname>Семенов</surname>
+      <name>Андрей</name>
+      <patronymic>Макимович</patronymic>
+      <date_birth>25.10.1998</date_birth>
+      <place_residence>г. Новая Каховка, пр. Победы 7 кв. 4</place_residence>
+      <telephone>+380956322541</telephone>
+      <email>adnrey_semenov@gmail.com</email>
+      <fullname_father>Семенов Максим Сергеевич</fullname_father>
+      <father_tel>+380956853251</father_tel>
+      <fullname_mother>Давыдова Маргарита Васильевна </fullname_mother>
+      <mother_tel>+380965232563</mother_tel>
+    </user>
+     <user>
+      <id>2</id>>
+      <surname>Денисов</surname>
+      <name>Максим</name>
+      <patronymic>Макарович</patronymic>
+      <date_birth>12.07.1997</date_birth>
+      <place_residence>г. Херсон, ул. И.Кулика 9 кв. 14</place_residence>
+      <telephone>+380506853214</telephone>
+      <email>denisov78788@gmail.com</email>
+      <fullname_father>Денисов Макар Андреевич</fullname_father>
+      <father_tel>+380956542136</father_tel>
+      <fullname_mother>Данилюк Тамара Марковна </fullname_mother>
+      <mother_tel>+380965213625</mother_tel>
+    </user>
+    <user>
+      <id>3</id>>
+      <surname>Кирилов</surname>
+      <name>Сергей</name>
+      <patronymic>Дмитриевич</patronymic>
+      <date_birth>24.04.1996</date_birth>
+      <place_residence>г. Херсон, пр. Таврический 11 кв. 8</place_residence>
+      <telephone>+380956322541</telephone>
+      <email>kirilov_serg11@gmail.com</email>
+      <fullname_father>Кирилов Сергей Андреевич</fullname_father>
+      <father_tel>+380502563256</father_tel>
+      <fullname_mother>Добкина Валентина Максимовна </fullname_mother>
+      <mother_tel>+380965412536</mother_tel>
+    </user>
+  <user>
+      <id>4</id>>
+      <surname>Артемов</surname>
+      <name>Даниил</name>
+      <patronymic>Сергеевич</patronymic>
+      <date_birth>6.04.1999</date_birth>
+      <place_residence>г. Херсон, пр. 200 лет Херсона  5 кв. 8</place_residence>
+      <telephone>+380995826413</telephone>
+      <email>artemov_daniil@gmail.com</email>
+      <fullname_father>Артемов Сергей Максимович</fullname_father>
+      <father_tel>+380674422365</father_tel>
+      <fullname_mother>Данилова Светлана Алексеевна </fullname_mother>
+      <mother_tel>+380506952536</mother_tel>
+    </user>
+  </university>
+</xml>
