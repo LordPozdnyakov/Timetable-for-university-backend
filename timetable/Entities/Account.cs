@@ -1,10 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using timetable.Entities;
 
-namespace timetable.Models
+namespace WebApi.Entities
 {
-    public class User
+    public class Account
     {
         [Key]
         public int Id { get; set; }
@@ -19,6 +20,7 @@ namespace timetable.Models
         public bool RememberMe { get; set; }
         public string Token { get; set; }
 
+
         // Password Service
         public string ResetToken { get; set; }
         public DateTime? ResetTokenExpires { get; set; }
@@ -26,8 +28,6 @@ namespace timetable.Models
         public DateTime PasswordReset { get; internal set; }
 
         // Privilege
-        public string Privilege { get; set; }
-
         public string Role { get; set; }
         // Name
         public string FirstName { get; set; }
@@ -45,5 +45,13 @@ namespace timetable.Models
         public string PhoneNumber { get; set; }
         public string Address { get; set; }
         public string GroupName { get; set; }
+       
+        public string VerificationToken { get; set; }
+       // public DateTime? Verified { get; set; }
+        //public bool IsVerified => Verified.HasValue || PasswordReset.HasValue;
+       
+       
+
+        
     }
 }

@@ -7,7 +7,7 @@ using System.Text;
 using Microsoft.IdentityModel.Tokens;
 
 using timetable.Configuration;
-
+using timetable.Entities;
 
 namespace timetable.Helpers
 {
@@ -40,7 +40,7 @@ namespace timetable.Helpers
             return property;
         }
 
-        public string GenerateToken(int inUserId, bool inRememberMe )
+        public string GenerateToken(int inUserId, bool inRememberMe, string Role )
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var expire = (inRememberMe == true) ? DateTime.UtcNow.AddDays(30) : DateTime.UtcNow.AddMinutes(30);
@@ -48,7 +48,8 @@ namespace timetable.Helpers
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.Name, inUserId.ToString())
+                    new Claim(ClaimTypes.Name, inUserId.ToString()),
+                    new Claim(ClaimTypes.Role, Role.ToString())
                 }),
                 Expires = expire,
                 SigningCredentials = new SigningCredentials(

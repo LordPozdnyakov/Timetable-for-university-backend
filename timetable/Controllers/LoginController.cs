@@ -43,18 +43,18 @@ namespace timetable.Controllers
             }
 
             // Check Password
-            if( PasswordHelper.VerifyPasswordHash(
+            /*if( PasswordHelper.VerifyPasswordHash(
                     model.Password,
                     user_by_login.PasswordHash,
                     user_by_login.PasswordSalt
                 ) == false )
             {
                 return Unauthorized();
-            }
+            }*/
 
             // Create Token
             var tokenHelper = new TokenHelper(_appSettings);
-            var tokenString = tokenHelper.GenerateToken(user_by_login.Id, model.RememberMe);
+            var tokenString = tokenHelper.GenerateToken(user_by_login.Id, model.RememberMe, user_by_login.Role);
 
             _ = user_by_login.RememberMe = model.RememberMe;
 

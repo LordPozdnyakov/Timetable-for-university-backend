@@ -6,6 +6,7 @@ using System.Security.Policy;
 using System.Threading.Tasks;
 
 using timetable.Data;
+using timetable.Entities;
 using timetable.Helpers;
 using timetable.Models;
 
@@ -31,6 +32,7 @@ namespace timetable.Services
             User user = new User();
             user.Email = "admin@example.com";
             user.FirstName = user.LastName = user.Privilege = "Admin";
+            user.Role = Role.Admin;
             user.Privilege = "admin";
 
             user.isPasswordSet = true;

@@ -15,7 +15,7 @@ using timetable.Data;
 using timetable.Helpers;
 using timetable.Models;
 using timetable.Services;
-
+using timetable.Entities;
 
 namespace timetable.Controllers
 {
@@ -47,7 +47,7 @@ namespace timetable.Controllers
             var users = _userService.GetAll();
             return users;
         }
-
+        [Authorize]
         [HttpGet]
         [Route("/users/{id}")]
         public ActionResult<User> GetUsersById([FromServices] DataContext context, [FromRoute]int id)
@@ -61,9 +61,10 @@ namespace timetable.Controllers
             return userItem;
         }
 
+        [Authorize(Roles = Role.Admin)]
         [HttpPost]
         [Route("/users")]
-        public ActionResult<User> PostUser([FromServices] DataContext context, [FromBody] User model)
+        public ActionResult<User> Create([FromServices] DataContext context, [FromBody] User model)
         {
             if(!ModelState.IsValid) { return BadRequest(ModelState); }
 

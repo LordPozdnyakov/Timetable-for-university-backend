@@ -8,13 +8,13 @@ namespace timetable.Models
         public static explicit operator LoginResponse(User that)
         {
             LoginResponse result = new LoginResponse();
-            
-            result.Privilege = that.Privilege;
+
+            result.Role = that.Role;
             result.FirstName = that.FirstName;
             result.LastName = that.LastName;
             result.Patronymic = that.Patronymic;
             result.GroupName = that.GroupName;
-            
+
             return result;
         }
 
@@ -24,7 +24,7 @@ namespace timetable.Models
 
         // Privilege
         [Required]
-        public string Privilege { get; set; }
+        public string Role { get; set; }
 
         // Name
         [Required]

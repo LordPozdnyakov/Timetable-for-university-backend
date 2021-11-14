@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using timetable.Entities;
 using timetable.Models;
 
 

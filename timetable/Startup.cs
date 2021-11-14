@@ -94,6 +94,8 @@ namespace timetable
 
             services.AddAuthorization(options =>
             {
+                options.AddPolicy("admin",
+                policy => policy.RequireRole("admin"));
                 options.DefaultPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
                 .RequireAuthenticatedUser()
                 .Build();
